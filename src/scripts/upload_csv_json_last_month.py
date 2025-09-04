@@ -5,6 +5,7 @@ from azure.identity import DefaultAzureCredential
 from azure.monitor.query import LogsQueryClient, LogsQueryStatus
 import os
 from datetime import datetime, timedelta, timezone
+import json
 
 WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 
@@ -163,6 +164,28 @@ with open(summary_file, "w", newline="", encoding="utf-8") as f:
 print(f"✅ Sintesi CSV saved: {summary_file} ({len(summary)} accounts)")
 
 
+summary_json_file = "sintesi_last30days.json"
+json_data = []
+
+for account, stats in summary.items():
+    json_data.append({
+        "prodotto": account,
+        "data": now.strftime("%Y-%m-%d"),
+        "issue_totali": stats["total"],
+        "issue_high": stats["high"],
+        "issue_medium": stats["medium"],
+        "issue_low": stats["low"],
+        "issue_dismissed": stats["dismissed"],
+        "change_last_12_month": stats["change_last_12m"],
+        "change_last_month": stats["change_last_1m"]
+    })
+
+with open(summary_json_file, "w", encoding="utf-8") as f:
+    json.dump(json_data, f, ensure_ascii=False, indent=4)
+
+print(f"✅ Sintesi JSON saved: {summary_json_file} ({len(json_data)} accounts)")
+
+
 conn_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 if not conn_str:
     raise ValueError("Variable AZURE_STORAGE_CONNECTION_STRING not found")
@@ -177,3 +200,4 @@ def upload_file(local_file_path, remote_file_name):
 
 upload_file("log_analytics_last30days.csv", "log_analytics_last30days.csv")
 upload_file("sintesi_last30days.csv", "sintesi_last30days.csv")
+upload_file("sintesi_last30days.json", "sintesi_last30days.json")
