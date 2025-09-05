@@ -1,15 +1,14 @@
 import csv
-import json
-import os
-from collections import defaultdict, Counter
-from datetime import datetime, timedelta, timezone
+from azure.storage.blob import BlobServiceClient
+from collections import defaultdict
 from azure.identity import DefaultAzureCredential
 from azure.monitor.query import LogsQueryClient, LogsQueryStatus
-from azure.storage.blob import BlobServiceClient
+import os
+from datetime import datetime, timedelta, timezone
+import json
 
-
-# Configurazione
 WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
+
 TABLE_NAME = "Alert_CL"
 DAYS = 30
 PAGE_SIZE = 50000
@@ -17,7 +16,6 @@ PAGE_SIZE = 50000
 STORAGE_ACCOUNT_NAME = "exportalertdevitnrg"
 CONTAINER_NAME = "csv"
 
-# Client Azure
 credential = DefaultAzureCredential()
 client = LogsQueryClient(credential)
 
@@ -31,7 +29,6 @@ last_time = start_time
 def to_kql_datetime(dt: datetime) -> str:
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-# Query Log Analytics
 while True:
     query = f"""
     {TABLE_NAME}
@@ -39,26 +36,39 @@ while True:
     | order by TimeGenerated asc
     | take {PAGE_SIZE}
     """
-    response = client.query_workspace(workspace_id=WORKSPACE_ID, query=query, timespan=None)
+
+    response = client.query_workspace(
+        workspace_id=WORKSPACE_ID,
+        query=query,
+        timespan=None
+    )
 
     if response.status != LogsQueryStatus.SUCCESS:
         print("❌ Error:", response.error)
         break
 
     table = response.tables[0]
+
     if columns is None:
-        columns = table.columns if isinstance(table.columns[0], str) else [col.name for col in table.columns]
+        if isinstance(table.columns[0], str):
+            columns = table.columns
+        else:
+            columns = [getattr(col, "name", getattr(col, "column_name", str(col))) for col in table.columns]
 
     rows = table.rows
+
     if not rows:
         break
 
     all_rows.extend(rows)
-    last_time = rows[-1][columns.index("TimeGenerated")] + timedelta(microseconds=1)
+
+    last_time = rows[-1][columns.index("TimeGenerated")]
+    last_time = last_time + timedelta(microseconds=1)  # per evitare duplicati
+
     print(f"➡️  Fetched {len(rows)} rows, total so far {len(all_rows)}")
+
     if len(rows) < PAGE_SIZE:
         break
-
 
 output_file = f"log_analytics_last{DAYS}days.csv"
 with open(output_file, "w", newline="", encoding="utf-8") as f:
@@ -68,15 +78,8 @@ with open(output_file, "w", newline="", encoding="utf-8") as f:
 
 print(f"✅ File CSV saved: {output_file} ({len(all_rows)} rows)")
 
-# Indici
-idx_account_s = columns.index("account_id_s") if "account_id_s" in columns else None
-idx_account_g = columns.index("account_id_g") if "account_id_g" in columns else None
-idx_time = columns.index("TimeGenerated")
-idx_severity = columns.index("severity_s")
-idx_account_name_s = columns.index("account_name_s")
 
-# Sintesi e conteggi mensili
-now = datetime.now(timezone.utc)
+
 summary = defaultdict(lambda: {
     "total": 0,
     "high": 0,
@@ -86,20 +89,33 @@ summary = defaultdict(lambda: {
     "change_last_12m": 0,
     "change_last_1m": 0
 })
-monthly_counts = defaultdict(lambda: Counter())
 
-# Elaborazione righe
+now = datetime.now(timezone.utc)
+one_month_ago = now - timedelta(days=30)
+twelve_months_ago = now - timedelta(days=365)
+
+
+idx_account_s = columns.index("account_id_s") if "account_id_s" in columns else None
+idx_account_g = columns.index("account_id_g") if "account_id_g" in columns else None
+idx_time = columns.index("TimeGenerated")
+idx_severity = columns.index("severity_s")
+idx_account_name_s = columns.index("account_name_s")
+default_status = "open"
+
 for row in all_rows:
     account = None
     if idx_account_s is not None and row[idx_account_s]:
+        account = row[idx_account_s]
         account = row[idx_account_name_s]
     elif idx_account_g is not None and row[idx_account_g]:
+        account = row[idx_account_g]
         account = row[idx_account_name_s]
     else:
         continue
 
     time = row[idx_time]
     severity = row[idx_severity].lower() if row[idx_severity] else ""
+    status = default_status.lower()
 
     summary[account]["total"] += 1
     if severity == "high":
@@ -109,58 +125,33 @@ for row in all_rows:
     elif severity == "low":
         summary[account]["low"] += 1
 
-    month_key = time.strftime("%Y-%m")
-    monthly_counts[account][month_key] += 1
+    if status == "dismissed":
+        summary[account]["dismissed"] += 1
 
-# Funzione variazione %
-def percent_change(current, previous):
-    if previous == 0:
-        return 100.0 if current > 0 else 0.0
-    return round(((current - previous) / previous) * 100, 2)
-
-# Calcolo variazioni
-for account in summary:
-    current_month = now.strftime("%Y-%m")
-    previous_month = (now - timedelta(days=30)).strftime("%Y-%m")
-    last_12_months = [(now - timedelta(days=30 * i)).strftime("%Y-%m") for i in range(1, 13)]
-
-    current_count = monthly_counts[account][current_month]
-    previous_count = monthly_counts[account][previous_month]
-    last_12_total = sum(monthly_counts[account][m] for m in last_12_months)
-    last_12_avg = last_12_total / 12 if last_12_total > 0 else 0
-
-    summary[account]["change_last_1m"] = percent_change(current_count, previous_count)
-    summary[account]["change_last_12m"] = percent_change(current_count, last_12_avg)
+    if time >= twelve_months_ago:
+        summary[account]["change_last_12m"] += 1
+    if time >= one_month_ago:
+        summary[account]["change_last_1m"] += 1
 
 
-# Salvataggio JSON
-with open("sintesi_last30days.json", "w", encoding="utf-8") as f:
-    json.dump([
-        {
-            "prodotto": account,
-            "data": now.strftime("%d/%m/%Y"),
-            "issue_totali": stats["total"],
-            "issue_high": stats["high"],
-            "issue_medium": stats["medium"],
-            "issue_low": stats["low"],
-            "issue_dismissed": stats["dismissed"],
-            "change_last_12_month": stats["change_last_12m"],
-            "change_last_month": stats["change_last_1m"]
-        }
-        for account, stats in summary.items()
-    ], f, ensure_ascii=False, indent=4)
-
-# Salvataggio CSV
-with open("sintesi_last30days.csv", "w", newline="", encoding="utf-8") as f:
+summary_file = "sintesi_last30days.csv"
+with open(summary_file, "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
     writer.writerow([
-        "prodotto", "data", "issue_totali", "issue_high", "issue_medium",
-        "issue_low", "issue_dismissed", "change_last_12_month", "change_last_month"
+        "prodotto",
+        "data",
+        "issue_totali",
+        "issue_high",
+        "issue_medium",
+        "issue_low",
+        "issue_dismissed",
+        "change_last_12_month",
+        "change_last_month"
     ])
     for account, stats in summary.items():
         writer.writerow([
             account,
-            now.strftime("%d/%m/%Y"),
+            now.strftime("%Y-%m-%d"),
             stats["total"],
             stats["high"],
             stats["medium"],
@@ -170,7 +161,29 @@ with open("sintesi_last30days.csv", "w", newline="", encoding="utf-8") as f:
             stats["change_last_1m"]
         ])
 
-print("✅ Script completato. File sintesi_last30days.csv e sintesi_last30days.json aggiornati.")
+print(f"✅ Sintesi CSV saved: {summary_file} ({len(summary)} accounts)")
+
+
+summary_json_file = "sintesi_last30days.json"
+json_data = []
+
+for account, stats in summary.items():
+    json_data.append({
+        "prodotto": account,
+        "data": now.strftime("%Y-%m-%d"),
+        "issue_totali": stats["total"],
+        "issue_high": stats["high"],
+        "issue_medium": stats["medium"],
+        "issue_low": stats["low"],
+        "issue_dismissed": stats["dismissed"],
+        "change_last_12_month": stats["change_last_12m"],
+        "change_last_month": stats["change_last_1m"]
+    })
+
+with open(summary_json_file, "w", encoding="utf-8") as f:
+    json.dump(json_data, f, ensure_ascii=False, indent=4)
+
+print(f"✅ Sintesi JSON saved: {summary_json_file} ({len(json_data)} accounts)")
 
 
 conn_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
