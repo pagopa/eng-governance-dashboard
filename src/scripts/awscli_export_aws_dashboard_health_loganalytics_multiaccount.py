@@ -190,13 +190,8 @@ def write_to_csv(rows, output_file):
 # === Main Execution ===
 if __name__ == '__main__':
     try:
-        #with open('src/scripts/account_id_aws.json') as f:
-        #    accounts = json.load(f)
-
-        import requests
-        response = requests.get("https://raw.githubusercontent.com/pagopa/eng-aws-authorization/main/src/drift-detection/accounts.json")
-        response.raise_for_status()  # Solleva eccezione se la richiesta fallisce
-        accounts = response.json()
+        with open('src/scripts/account_id_aws.json') as f: #https://github.com/pagopa/eng-aws-authorization/blob/main/src/drift-detection/accounts.json
+            accounts = json.load(f)
 
         all_findings = []
 
