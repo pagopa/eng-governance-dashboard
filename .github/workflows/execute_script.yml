@@ -5,7 +5,6 @@ env:
   IAM_ROLE: arn:aws:iam::519902559805:role/GitHubActionIACRoleR
   AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
   AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-  #AZ_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
   AZURE_WORKSPACE_ID: ${{ secrets.AZURE_WORKSPACE_ID }}
   AZURE_PRIMARY_KEY: ${{ secrets.AZURE_PRIMARY_KEY }}
