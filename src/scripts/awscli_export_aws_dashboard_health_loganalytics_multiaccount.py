@@ -20,17 +20,8 @@ AZURE_PRIMARY_KEY = os.getenv("AZURE_PRIMARY_KEY")
 AZURE_LOG_TYPE = "Alert_CL"
 
 # AWS Clients
-health_client = boto3.client('health', region_name='us-east-1')  # AWS Health API only available in us-east-1
 sts_client = boto3.client('sts')
-iam_client = boto3.client('iam')
 
-# === AWS Account Info ===
-account_id = sts_client.get_caller_identity()["Account"]
-try:
-    aliases = iam_client.list_account_aliases()["AccountAliases"]
-    account_name = aliases[0] if aliases else "Unknown"
-except Exception:
-    account_name = "Unknown"
 
 # === Azure Signature ===
 def build_signature(workspace_id, key, date, content_length, method, content_type, resource):
@@ -42,6 +33,7 @@ def build_signature(workspace_id, key, date, content_length, method, content_typ
         hmac.new(decoded_key, bytes_to_hash, digestmod=hashlib.sha256).digest()
     ).decode()
     return f'SharedKey {workspace_id}:{encoded_hash}'
+
 
 def post_to_log_analytics(workspace_id, key, log_type, body):
     body_json = json.dumps(body)
@@ -87,7 +79,7 @@ def assume_role(account_id, role_name):
 
 
 # === Fetch AWS Health Events ===
-def get_health_events():
+def get_health_events(health_client):
     try:
         all_events = []
         next_token = None
@@ -112,6 +104,7 @@ def get_health_events():
         print(f"❌ Failed to fetch AWS Health events: {e}")
         return []
 
+
 # === Determine severity for scheduledChange events ===
 def calculate_scheduled_severity(start_time):
     if not start_time:
@@ -120,7 +113,6 @@ def calculate_scheduled_severity(start_time):
     days_diff = (start_time - now).days
 
     if days_diff < 0:
-        # Evento già passato → ancora più urgente
         return "high"
     elif days_diff <= 90:
         return "high"
@@ -131,23 +123,24 @@ def calculate_scheduled_severity(start_time):
 
 
 # === Collect and process event details ===
-def collect_health_issues(events):
+def collect_health_issues(events, health_client, account_id, account_name):
     findings = []
     for event in events:
         try:
             details = health_client.describe_event_details(eventArns=[event['arn']])
             event_detail = details['successfulSet'][0]
             description = event_detail.get('eventDescription', {}).get('latestDescription', 'N/A')
-            resourceid = event_detail.get('arn', {}).get('latestDescription', 'N/A')
-            start_time = event.get('startTime', 'N/A')
-            
+
             affected_entities_resp = health_client.describe_affected_entities(filter={'eventArns': [event['arn']]})
             entities = affected_entities_resp.get('entities', [])
             affected_resource_ids = [entity.get('entityValue', 'N/A') for entity in entities]
             resource_id = '; '.join(affected_resource_ids) if affected_resource_ids else 'N/A'
-    
+
+            start_time = event.get('startTime', None)
+
         except Exception as e:
             description = f"⚠️ Could not retrieve description: {e}"
+            resource_id = "N/A"
             start_time = None
 
         category = event.get('eventTypeCategory')
@@ -176,6 +169,7 @@ def collect_health_issues(events):
         })
     return findings
 
+
 # === Export to CSV ===
 def write_to_csv(rows, output_file):
     fieldnames = ['account_name', 'account_id', 'resource_id', 'issue',
@@ -186,18 +180,18 @@ def write_to_csv(rows, output_file):
         writer.writeheader()
         writer.writerows(rows)
 
-        
+
 # === Main Execution ===
 if __name__ == '__main__':
     try:
-        with open('src/scripts/account_id_aws.json') as f: #https://github.com/pagopa/eng-aws-authorization/blob/main/src/drift-detection/accounts.json
+        with open('src/scripts/account.json') as f:
             accounts = json.load(f)
 
         all_findings = []
+        role_name = "OrganizationAccountAccessRole"  # cambia se serve
 
-        for acc in accounts:
-            account_id = acc['account_id']
-            role_name = acc['role_name']
+        for account_name, acc in accounts.items():
+            account_id = acc['id']
 
             health_client, iam_client, assumed_account_id = assume_role(account_id, role_name)
             if not health_client:
@@ -205,13 +199,13 @@ if __name__ == '__main__':
 
             try:
                 aliases = iam_client.list_account_aliases()["AccountAliases"]
-                account_name = aliases[0] if aliases else "Unknown"
+                account_name_alias = aliases[0] if aliases else account_name
             except Exception:
-                account_name = "Unknown"
+                account_name_alias = account_name
 
-            print(f"🔍 Fetching events for account {assumed_account_id} ({account_name})...")
+            print(f"🔍 Fetching events for account {assumed_account_id} ({account_name_alias})...")
             events = get_health_events(health_client)
-            findings = collect_health_issues(events, health_client, assumed_account_id, account_name)
+            findings = collect_health_issues(events, health_client, assumed_account_id, account_name_alias)
             all_findings.extend(findings)
 
         if all_findings:
@@ -226,4 +220,3 @@ if __name__ == '__main__':
             print("✅ No relevant health events found.")
     except Exception as e:
         print(f"❌ Error: {str(e)}")
-
