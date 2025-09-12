@@ -20,6 +20,7 @@ AZURE_PRIMARY_KEY = os.getenv("AZURE_PRIMARY_KEY")
 AZURE_LOG_TYPE = "Alert_CL"
 
 # AWS Clients
+role_name = os.getenv("IAM_ROLE")
 sts_client = boto3.client('sts')
 
 
@@ -60,7 +61,8 @@ def post_to_log_analytics(workspace_id, key, log_type, body):
 
 # === Assume Role ===
 def assume_role(account_id, role_name):
-    role_arn = f"arn:aws:iam::{account_id}:role/{role_name}"
+    #role_arn = f"arn:aws:iam::{account_id}:role/{role_name}"
+    role_arn = role_name
     try:
         response = sts_client.assume_role(
             RoleArn=role_arn,
@@ -188,7 +190,6 @@ if __name__ == '__main__':
             accounts = json.load(f)
 
         all_findings = []
-        role_name = "OrganizationAccountAccessRole"  # cambia se serve
 
         for account_name, acc in accounts.items():
             account_id = acc['id']
