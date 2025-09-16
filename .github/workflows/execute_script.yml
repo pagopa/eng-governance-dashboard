@@ -1,0 +1,62 @@
+name: Run Dashboard Script for AWS and Azure
+
+env:
+  AWS_REGION: eu-south-1
+  IAM_ROLE: arn:aws:iam::519902559805:role/GitHubActionIACRoleR
+  AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
+  AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
+  AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+  AZURE_WORKSPACE_ID: ${{ secrets.AZURE_WORKSPACE_ID }}
+  AZURE_PRIMARY_KEY: ${{ secrets.AZURE_PRIMARY_KEY }}
+  AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@1e31de5234b9f8995739874a8ce0492dc87873e2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@5fd3084fc36e372ff1fff382a39b10d03659f355
+        with:
+          role-to-assume: ${{ env.IAM_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Azure
+        uses: azure/login@a65d910e8af852a8061c627c456678983e180302
+        with:
+          client-id: ${{ env.AZ_CLIENT_ID }}
+          tenant-id: ${{ env.AZ_TENANT_ID }}
+          subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
+
+      - name: setup-python
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d
+        with:
+          python-version-file: "src/.python-version"
+          #python-version: '3.10'
+
+      - name: install-py-deps
+        run: pip3 install --require-hashes --requirement src/scripts/requirements.txt
+
+      - name: Run Python script aws_dashboard_health multiaccount
+        run: python src/scripts/awscli_export_aws_dashboard_health_loganalytics_multiaccount.py
+
+      - name: Run Python script aws_trusted_advisor multiaccount
+        run: python src/scripts/awscli_export_aws_trusted_advisor_loganalytics_multiaccount.py
+
+      - name: Run Python script azure_security_advisor
+        run: python src/scripts/azcli_export_azure_security_advisor_loganalytics.py
+
+      - name: Run Python script azure_security_policy
+        run: python src/scripts/azcli_export_azure_security_policy_loganalytics.py
+
+      - name: Run Python script Upload file Storage
+        run: python src/scripts/upload_csv_json_last_month.py
