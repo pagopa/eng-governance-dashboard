@@ -3,5 +3,5 @@ data "azurerm_management_group" "pagopa" {
 }
 
 data "azurerm_resource_group" "identity" {
-  name     = "${local.project}-identity-rg"
+  name = "${local.project}-identity-rg"
 }

@@ -1,6 +1,6 @@
 resource "github_repository_environment" "prod_cd" {
-  environment         = "prod-cd"
-  repository          = var.github.repository
+  environment = "prod-cd"
+  repository  = var.github.repository
   # prevent_self_review = true
   # reviewers {
   #   users = [data.github_user.current.id]
