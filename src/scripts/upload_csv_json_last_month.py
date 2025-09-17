@@ -167,7 +167,7 @@ with open("sintesi_last30days.csv", "w", newline="", encoding="utf-8") as f:
             stats["change_last_1m"]
         ])
 
-print("✅ Script completato. File sintesi_last30days.csv e sintesi_last30days.json aggiornati.")
+print("✅ Script completed. File sintesi_last30days.csv and sintesi_last30days.json updated.")
 
 blob_service_client = BlobServiceClient(account_url=account_url, credential=credential)
 container_client = blob_service_client.get_container_client(CONTAINER_NAME)
