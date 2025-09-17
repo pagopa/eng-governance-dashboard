@@ -5,9 +5,9 @@ env:
   #IAM_ROLE: arn:aws:iam::519902559805:role/GitHubActionIACRoleR
   IAM_ROLE: arn:aws:iam::794703684555:role/test-role-dashboard-execute
   IAM_ROLE_ROOT: arn:aws:iam::794703684555:role/test-role-dashboard
-  AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
-  AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
-  AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
+  AZ_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZ_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZ_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   AZURE_WORKSPACE_ID: ${{ secrets.AZURE_WORKSPACE_ID }}
   AZURE_PRIMARY_KEY: ${{ secrets.AZURE_WORKSPACE_KEY }}
   AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
