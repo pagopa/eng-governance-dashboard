@@ -2,7 +2,9 @@ name: Run Dashboard Script for AWS and Azure
 
 env:
   AWS_REGION: eu-south-1
-  IAM_ROLE: arn:aws:iam::519902559805:role/GitHubActionIACRoleR
+  #IAM_ROLE: arn:aws:iam::519902559805:role/GitHubActionIACRoleR
+  IAM_ROLE: arn:aws:iam::794703684555:role/test-role-dashboard-execute
+  IAM_ROLE_ROOT: arn:aws:iam::794703684555:role/test-role-dashboard
   AZ_CLIENT_ID: ${{ secrets.AZ_CLIENT_ID }}
   AZ_TENANT_ID: ${{ secrets.AZ_TENANT_ID }}
   AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
@@ -30,7 +32,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@5fd3084fc36e372ff1fff382a39b10d03659f355
         with:
-          role-to-assume: ${{ env.IAM_ROLE }}
+          role-to-assume: ${{ env.IAM_ROLE_ROOT }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Azure
@@ -51,14 +53,14 @@ jobs:
       - name: Run Python script aws_dashboard_health multiaccount
         run: python src/scripts/awscli_export_aws_dashboard_health_loganalytics_multiaccount.py
 
-      - name: Run Python script aws_trusted_advisor multiaccount
-        run: python src/scripts/awscli_export_aws_trusted_advisor_loganalytics_multiaccount.py
+      #- name: Run Python script aws_trusted_advisor multiaccount
+      #  run: python src/scripts/awscli_export_aws_trusted_advisor_loganalytics_multiaccount.py
 
-      - name: Run Python script azure_security_advisor
-        run: python src/scripts/azcli_export_azure_security_advisor_loganalytics.py
+      #- name: Run Python script azure_security_advisor
+      #  run: python src/scripts/azcli_export_azure_security_advisor_loganalytics.py
 
-      - name: Run Python script azure_security_policy
-        run: python src/scripts/azcli_export_azure_security_policy_loganalytics.py
+      #- name: Run Python script azure_security_policy
+      #  run: python src/scripts/azcli_export_azure_security_policy_loganalytics.py
 
-      - name: Run Python script Upload file Storage
-        run: python src/scripts/upload_csv_json_last_month.py
+      #- name: Run Python script Upload file Storage
+      #  run: python src/scripts/upload_csv_json_last_month.py
