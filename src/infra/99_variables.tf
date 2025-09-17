@@ -25,7 +25,7 @@ variable "env_short" {
 
 variable "location" {
   type    = string
-  default = "westeurope"
+  default = "italynorth"
 }
 
 variable "github" {
