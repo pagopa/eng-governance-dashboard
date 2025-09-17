@@ -17,6 +17,7 @@ AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 AZURE_WORKSPACE_KEY = os.getenv("AZURE_WORKSPACE_KEY")
 AZURE_LOG_TYPE = "Alert_CL"
 role_name = os.getenv("IAM_ROLE")
+sts_client = boto3.client('sts')
 
 # === Azure Signature ===
 def build_signature(workspace_id, key, date, content_length, method, content_type, resource):
@@ -53,7 +54,7 @@ def post_to_log_analytics(workspace_id, key, log_type, body):
 
 # === Assume Role ===
 def assume_role(account_id, role_name):
-    sts_client = boto3.client("sts")
+    #sts_client = boto3.client("sts")
     #role_arn = f"arn:aws:iam::{account_id}:role/{role_name}"
     role_arn = role_name
     try:
