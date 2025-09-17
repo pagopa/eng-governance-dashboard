@@ -43,9 +43,33 @@ resource "github_actions_environment_secret" "azure_cd_workspace_id" {
 }
 
 #tfsec:ignore:github-actions-no-plain-text-action-secrets # not real secret
-resource "github_actions_environment_secret" "azure_cd_storageaccount_id" {
+resource "github_actions_environment_secret" "azure_cd_workspace_key" {
   repository      = var.github.repository
   environment     = github_repository_environment.prod_cd.environment
-  secret_name     = "AZURE_STORAGE_ACCOUNT_ID"
-  plaintext_value = azurerm_storage_account.data.id
+  secret_name     = "AZURE_WORKSPACE_KEY"
+  plaintext_value = azurerm_log_analytics_workspace.data.primary_shared_key
 }
+
+#tfsec:ignore:github-actions-no-plain-text-action-secrets # not real secret
+resource "github_actions_environment_secret" "azure_cd_storageaccount_name" {
+  repository      = var.github.repository
+  environment     = github_repository_environment.prod_cd.environment
+  secret_name     = "AZURE_STORAGE_ACCOUNT_NAME"
+  plaintext_value = azurerm_storage_account.data.name
+}
+
+# #tfsec:ignore:github-actions-no-plain-text-action-secrets # not real secret
+# resource "github_actions_environment_secret" "azure_cd_workspace_dcr_id" {
+#   repository      = var.github.repository
+#   environment     = github_repository_environment.prod_cd.environment
+#   secret_name     = "AZURE_WORKSPACE_DCR_ID"
+#   plaintext_value = azurerm_monitor_data_collection_rule.data.immutable_id
+# }
+
+# #tfsec:ignore:github-actions-no-plain-text-action-secrets # not real secret
+# resource "github_actions_environment_secret" "azure_cd_workspace_dce_id" {
+#   repository      = var.github.repository
+#   environment     = github_repository_environment.prod_cd.environment
+#   secret_name     = "AZURE_WORKSPACE_DCE_ID"
+#   plaintext_value = azurerm_monitor_data_collection_endpoint.data.immutable_id
+# }
