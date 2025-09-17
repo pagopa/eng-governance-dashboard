@@ -15,7 +15,7 @@ workspace_id = os.getenv("AZURE_WORKSPACE_ID")
 primary_key = os.getenv("AZURE_WORKSPACE_KEY")
 
 if not workspace_id or not primary_key:
-    print("Errore: variabili d'ambiente AZURE_WORKSPACE_ID e AZURE_PRIMARY_KEY devono essere settate.")
+    print("Errore: variabili d'ambiente AZURE_WORKSPACE_ID e AZURE_WORKSPACE_KEY devono essere settate.")
     sys.exit(1)
 
 log_type = "Alert_CL"

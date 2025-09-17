@@ -25,7 +25,7 @@ workspace_id = os.getenv("AZURE_WORKSPACE_ID")
 primary_key = os.getenv("AZURE_WORKSPACE_KEY")
 
 if not workspace_id or not primary_key:
-    print("Error: var AZURE_WORKSPACE_ID and AZURE_PRIMARY_KEY not found")
+    print("Error: var AZURE_WORKSPACE_ID and AZURE_WORKSPACE_KEY not found")
     sys.exit(1)
 
 log_type = "Alert_CL"

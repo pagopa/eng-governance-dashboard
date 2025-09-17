@@ -14,7 +14,7 @@ timestamp = datetime.now().strftime('%Y-%m-%d')
 
 # Azure Log Analytics
 AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
-AZURE_PRIMARY_KEY = os.getenv("AZURE_WORKSPACE_KEY")
+AZURE_WORKSPACE_KEY = os.getenv("AZURE_WORKSPACE_KEY")
 AZURE_LOG_TYPE = "Alert_CL"
 role_name = os.getenv("IAM_ROLE")
 
@@ -164,8 +164,8 @@ if __name__ == "__main__":
             write_to_csv(all_issues, OUTPUT_FILE)
             print(f"✅ Exported {len(all_issues)} issues to {OUTPUT_FILE}")
 
-            if AZURE_PRIMARY_KEY and AZURE_WORKSPACE_ID:
-                post_to_log_analytics(AZURE_WORKSPACE_ID, AZURE_PRIMARY_KEY, AZURE_LOG_TYPE, all_issues)
+            if AZURE_WORKSPACE_KEY and AZURE_WORKSPACE_ID:
+                post_to_log_analytics(AZURE_WORKSPACE_ID, AZURE_WORKSPACE_KEY, AZURE_LOG_TYPE, all_issues)
             else:
                 print("⚠️ Azure credentials not set. Skipping upload.")
         else:

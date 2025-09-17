@@ -16,7 +16,7 @@ now = datetime.now(timezone.utc)
 
 # Azure Log Analytics
 AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
-AZURE_PRIMARY_KEY = os.getenv("AZURE_WORKSPACE_KEY")
+AZURE_WORKSPACE_KEY = os.getenv("AZURE_WORKSPACE_KEY")
 AZURE_LOG_TYPE = "Alert_CL"
 
 # AWS Clients
@@ -224,8 +224,8 @@ if __name__ == '__main__':
             write_to_csv(all_findings, OUTPUT_FILE)
             print(f"✅ Exported {len(all_findings)} health events to {OUTPUT_FILE}")
 
-            if AZURE_PRIMARY_KEY and AZURE_WORKSPACE_ID:
-                post_to_log_analytics(AZURE_WORKSPACE_ID, AZURE_PRIMARY_KEY, AZURE_LOG_TYPE, all_findings)
+            if AZURE_WORKSPACE_KEY and AZURE_WORKSPACE_ID:
+                post_to_log_analytics(AZURE_WORKSPACE_ID, AZURE_WORKSPACE_KEY, AZURE_LOG_TYPE, all_findings)
             else:
                 print("⚠️ Azure credentials not set. Skipping upload.")
         else:
