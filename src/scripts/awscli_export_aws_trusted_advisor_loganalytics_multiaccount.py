@@ -14,7 +14,7 @@ timestamp = datetime.now().strftime('%Y-%m-%d')
 
 # Azure Log Analytics
 AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
-AZURE_PRIMARY_KEY = os.getenv("AZURE_PRIMARY_KEY")
+AZURE_PRIMARY_KEY = os.getenv("AZURE_WORKSPACE_KEY")
 AZURE_LOG_TYPE = "Alert_CL"
 role_name = os.getenv("IAM_ROLE")
 

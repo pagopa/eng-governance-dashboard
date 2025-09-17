@@ -12,7 +12,7 @@ import os
 
 # ===== Log Analytics Config =====
 workspace_id = os.getenv("AZURE_WORKSPACE_ID")
-primary_key = os.getenv("AZURE_PRIMARY_KEY")
+primary_key = os.getenv("AZURE_WORKSPACE_KEY")
 
 if not workspace_id or not primary_key:
     print("Errore: variabili d'ambiente AZURE_WORKSPACE_ID e AZURE_PRIMARY_KEY devono essere settate.")

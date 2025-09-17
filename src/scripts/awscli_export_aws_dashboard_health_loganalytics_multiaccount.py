@@ -16,7 +16,7 @@ now = datetime.now(timezone.utc)
 
 # Azure Log Analytics
 AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
-AZURE_PRIMARY_KEY = os.getenv("AZURE_PRIMARY_KEY")
+AZURE_PRIMARY_KEY = os.getenv("AZURE_WORKSPACE_KEY")
 AZURE_LOG_TYPE = "Alert_CL"
 
 # AWS Clients
