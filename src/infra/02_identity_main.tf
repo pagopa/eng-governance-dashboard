@@ -10,7 +10,7 @@ resource "azurerm_federated_identity_credential" "prod" {
   audience            = ["api://AzureADTokenExchange"]
   issuer              = "https://token.actions.githubusercontent.com"
   parent_id           = azurerm_user_assigned_identity.main.id
-  subject             = "repo:${var.github.org}/${var.github.repository}:environment:${var.env}"
+  subject             = "repo:${var.github.org}/${var.github.repository}:environment:${var.env}-cd"
 }
 
 output "azure_main" {

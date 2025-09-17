@@ -12,3 +12,9 @@ resource "azurerm_storage_account" "data" {
 
   # tags = var.tags
 }
+
+resource "azurerm_storage_container" "example" {
+  name                  = "csv"
+  storage_account_id    = azurerm_storage_account.data.id
+  container_access_type = "private"
+}
