@@ -41,17 +41,8 @@ def post_to_log_analytics(workspace_id, key, log_type, body):
     rfc1123date = datetime.now(timezone.utc).strftime('%a, %d %b %Y %H:%M:%S GMT')
     resource = '/api/logs'
     content_type = 'application/json'
-    #content_length = len(body_json)
-    content_length = len(body_json.encode('utf-8'))
-    #signature = build_signature(workspace_id, key, rfc1123date, content_length, 'POST', content_type, resource)
-    signature = build_signature(
-    workspace_id=workspace_id,
-    key=key,
-    date=rfc1123date,
-    content_length=content_length,
-    method='POST',
-    content_type=content_type,
-    resource=resource)
+    content_length = len(body_json)
+    signature = build_signature(workspace_id, key, rfc1123date, content_length, 'POST', content_type, resource)
 
     
     uri = f'https://{workspace_id}.ods.opinsights.azure.com{resource}?api-version=2016-04-01'
