@@ -8,6 +8,7 @@ env:
   AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
   AZURE_WORKSPACE_ID: ${{ secrets.AZURE_WORKSPACE_ID }}
   AZURE_PRIMARY_KEY: ${{ secrets.AZURE_PRIMARY_KEY }}
+  AZURE_STORAGE_ACCOUNT_NAME: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
   
 on:
   workflow_dispatch:

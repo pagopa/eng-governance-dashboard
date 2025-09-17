@@ -13,8 +13,8 @@ TABLE_NAME = "Alert_CL"
 DAYS = 30
 PAGE_SIZE = 50000
 
-STORAGE_ACCOUNT_NAME = "exportalertdevitnrg"
 CONTAINER_NAME = "csv"
+STORAGE_ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
 
 # Client Azure
 credential = DefaultAzureCredential()
