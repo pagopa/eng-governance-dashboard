@@ -214,7 +214,6 @@ if __name__ == '__main__':
             print(f"✅ Exported {len(all_findings)} health events to {OUTPUT_FILE}")
 
             if AZURE_PRIMARY_KEY and AZURE_WORKSPACE_ID:
-                print(f"Workspace: {AZURE_WORKSPACE_ID}, Key starts: {AZURE_PRIMARY_KEY[:4]}...")
                 post_to_log_analytics(AZURE_WORKSPACE_ID, AZURE_PRIMARY_KEY, AZURE_LOG_TYPE, all_findings)
             else:
                 print("⚠️ Azure credentials not set. Skipping upload.")
