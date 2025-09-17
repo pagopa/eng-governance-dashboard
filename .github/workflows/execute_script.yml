@@ -8,7 +8,7 @@ env:
   AZ_SUBSCRIPTION_ID: ${{ secrets.AZ_SUBSCRIPTION_ID }}
   AZURE_WORKSPACE_ID: ${{ secrets.AZURE_WORKSPACE_ID }}
   AZURE_PRIMARY_KEY: ${{ secrets.AZURE_PRIMARY_KEY }}
-  AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+  
 on:
   workflow_dispatch:
 
@@ -43,7 +43,6 @@ jobs:
         uses: actions/setup-python@82c7e631bb3cdc910f68e0081d67478d79c6982d
         with:
           python-version-file: "src/.python-version"
-          #python-version: '3.10'
 
       - name: install-py-deps
         run: pip3 install --require-hashes --requirement src/scripts/requirements.txt

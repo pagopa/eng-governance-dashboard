@@ -8,7 +8,6 @@ from azure.monitor.query import LogsQueryClient, LogsQueryStatus
 from azure.storage.blob import BlobServiceClient
 
 
-# Configurazione
 WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 TABLE_NAME = "Alert_CL"
 DAYS = 30
@@ -19,6 +18,7 @@ CONTAINER_NAME = "csv"
 
 # Client Azure
 credential = DefaultAzureCredential()
+account_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
 client = LogsQueryClient(credential)
 
 end_time = datetime.now(timezone.utc)
@@ -68,14 +68,14 @@ with open(output_file, "w", newline="", encoding="utf-8") as f:
 
 print(f"✅ File CSV saved: {output_file} ({len(all_rows)} rows)")
 
-# Indici
+# Index
 idx_account_s = columns.index("account_id_s") if "account_id_s" in columns else None
 idx_account_g = columns.index("account_id_g") if "account_id_g" in columns else None
 idx_time = columns.index("TimeGenerated")
 idx_severity = columns.index("severity_s")
 idx_account_name_s = columns.index("account_name_s")
 
-# Sintesi e conteggi mensili
+# Count monthly
 now = datetime.now(timezone.utc)
 summary = defaultdict(lambda: {
     "total": 0,
@@ -88,7 +88,6 @@ summary = defaultdict(lambda: {
 })
 monthly_counts = defaultdict(lambda: Counter())
 
-# Elaborazione righe
 for row in all_rows:
     account = None
     if idx_account_s is not None and row[idx_account_s]:
@@ -112,13 +111,11 @@ for row in all_rows:
     month_key = time.strftime("%Y-%m")
     monthly_counts[account][month_key] += 1
 
-# Funzione variazione %
 def percent_change(current, previous):
     if previous == 0:
         return 100.0 if current > 0 else 0.0
     return round(((current - previous) / previous) * 100, 2)
 
-# Calcolo variazioni
 for account in summary:
     current_month = now.strftime("%Y-%m")
     previous_month = (now - timedelta(days=30)).strftime("%Y-%m")
@@ -133,7 +130,7 @@ for account in summary:
     summary[account]["change_last_12m"] = percent_change(current_count, last_12_avg)
 
 
-# Salvataggio JSON
+# Save JSON
 with open("sintesi_last30days.json", "w", encoding="utf-8") as f:
     json.dump([
         {
@@ -150,7 +147,7 @@ with open("sintesi_last30days.json", "w", encoding="utf-8") as f:
         for account, stats in summary.items()
     ], f, ensure_ascii=False, indent=4)
 
-# Salvataggio CSV
+# Save CSV
 with open("sintesi_last30days.csv", "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
     writer.writerow([
@@ -172,12 +169,7 @@ with open("sintesi_last30days.csv", "w", newline="", encoding="utf-8") as f:
 
 print("✅ Script completato. File sintesi_last30days.csv e sintesi_last30days.json aggiornati.")
 
-
-conn_str = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-if not conn_str:
-    raise ValueError("Variable AZURE_STORAGE_CONNECTION_STRING not found")
-
-blob_service_client = BlobServiceClient.from_connection_string(conn_str)
+blob_service_client = BlobServiceClient(account_url=account_url, credential=credential)
 container_client = blob_service_client.get_container_client(CONTAINER_NAME)
 
 def upload_file(local_file_path, remote_file_name):
