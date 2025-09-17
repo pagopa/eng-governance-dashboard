@@ -16,12 +16,15 @@ resource "azurerm_role_assignment" "main_authorization_advisor_review_readers" {
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
 
-# assegnare ruolo RBAC alla managed identity azure con ruoli 
-# “Storage Account Contributor, Log Analytics Reader, Advisor Review Reader e PagoPA Policy Reader”
-
 resource "azurerm_role_assignment" "storage_account_contributor" {
   scope                = azurerm_storage_account.data.id
   role_definition_name = "Storage Account Contributor"
+  principal_id         = azurerm_user_assigned_identity.main.principal_id
+}
+
+resource "azurerm_role_assignment" "storage_account_blob_contributor" {
+  scope                = azurerm_storage_account.data.id
+  role_definition_name = "Storage Blob Data Contributor"
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
 
