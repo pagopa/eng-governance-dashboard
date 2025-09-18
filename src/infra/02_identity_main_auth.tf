@@ -1,8 +1,8 @@
-# resource "azurerm_role_assignment" "main_authorization_reader" {
-#   scope                = data.azurerm_management_group.pagopa.id
-#   role_definition_name = "Reader"
-#   principal_id         = azurerm_user_assigned_identity.main.principal_id
-# }
+resource "azurerm_role_assignment" "main_authorization_reader" {
+  scope                = data.azurerm_management_group.pagopa.id
+  role_definition_name = "Reader"
+  principal_id         = azurerm_user_assigned_identity.main.principal_id
+}
 
 resource "azurerm_role_assignment" "main_authorization_pagopa_policy_reader" {
   scope                = data.azurerm_management_group.pagopa.id
