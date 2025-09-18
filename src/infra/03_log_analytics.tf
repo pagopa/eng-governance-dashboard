@@ -5,6 +5,8 @@ resource "azurerm_log_analytics_workspace" "data" {
   sku                 = "PerGB2018"
   retention_in_days   = 360
 
+  local_authentication_enabled = true
+
   # tags = var.tags
 }
 
