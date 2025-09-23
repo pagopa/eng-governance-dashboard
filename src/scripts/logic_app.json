@@ -1,299 +1,322 @@
 {
-    "definition": {
-        "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
-        "contentVersion": "1.0.0.0",
-        "triggers": {
-            "When_a_HTTP_request_is_received": {
-                "type": "Request",
-                "kind": "Http"
-            }
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_org_p_govd_law_name": {
+            "defaultValue": "org-p-govd-law",
+            "type": "String"
         },
-        "actions": {
-            "Get_blob_content_ALL_Alert": {
-                "type": "ApiConnection",
-                "inputs": {
-                    "host": {
-                        "connection": {
-                            "name": "@parameters('$connections')['azureblob']['connectionId']"
-                        }
-                    },
-                    "method": "get",
-                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('https://exportalertdevitnrg.blob.core.windows.net/'))}/files/@{encodeURIComponent(encodeURIComponent('JTJmY3N2JTJmbG9nX2FuYWx5dGljc19sYXN0MzBkYXlzLmNzdg=='))}/content",
-                    "queries": {
-                        "inferContentType": true
-                    }
-                },
-                "runAfter": {},
-                "metadata": {
-                    "JTJmY3N2JTJmYWxsX2xhc3RfbW9udGguY3N2": "/csv/all_last_month.csv",
-                    "JTJmY3N2JTJmbG9nX2FuYWx5dGljc19sYXN0MzBkYXlzLmNzdg==": "/csv/log_analytics_last30days.csv"
-                }
-            },
-            "Create_file_ALL_Alert": {
-                "type": "ApiConnection",
-                "inputs": {
-                    "host": {
-                        "connection": {
-                            "name": "@parameters('$connections')['googledrive']['connectionId']"
-                        }
-                    },
-                    "method": "post",
-                    "body": "@body('Get_blob_content_ALL_Alert')",
-                    "path": "/datasets/default/files",
-                    "queries": {
-                        "folderPath": "/csv/",
-                        "name": "log_analytics_last30days.csv",
-                        "queryParametersSingleEncoded": true
-                    }
-                },
-                "runAfter": {
-                    "Get_blob_content_ALL_Alert": [
-                        "Succeeded"
-                    ]
-                }
-            },
-            "Get_blob_content_Sintetico_Alert": {
-                "type": "ApiConnection",
-                "inputs": {
-                    "host": {
-                        "connection": {
-                            "name": "@parameters('$connections')['azureblob']['connectionId']"
-                        }
-                    },
-                    "method": "get",
-                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('https://exportalertdevitnrg.blob.core.windows.net/'))}/files/@{encodeURIComponent(encodeURIComponent('JTJmY3N2JTJmc2ludGVzaV9sYXN0MzBkYXlzLmNzdg=='))}/content",
-                    "queries": {
-                        "inferContentType": true
-                    }
-                },
-                "runAfter": {},
-                "metadata": {
-                    "JTJmY3N2JTJmc2ludGV0aWNvX2xhc3RfbW9udGguY3N2": "/csv/sintetico_last_month.csv",
-                    "JTJmY3N2JTJmc2ludGVzaV9sYXN0MzBkYXlzLmNzdg==": "/csv/sintesi_last30days.csv"
-                }
-            },
-            "Create_file_Sintetico_Alert": {
-                "type": "ApiConnection",
-                "inputs": {
-                    "host": {
-                        "connection": {
-                            "name": "@parameters('$connections')['googledrive']['connectionId']"
-                        }
-                    },
-                    "method": "post",
-                    "body": "@body('Get_blob_content_Sintetico_Alert')",
-                    "path": "/datasets/default/files",
-                    "queries": {
-                        "folderPath": "/csv/",
-                        "name": "sintesi_last30days.csv",
-                        "queryParametersSingleEncoded": true
-                    }
-                },
-                "runAfter": {
-                    "Get_blob_content_Sintetico_Alert": [
-                        "Succeeded"
-                    ]
-                }
-            },
-            "Update_file_ALL": {
-                "type": "ApiConnection",
-                "inputs": {
-                    "host": {
-                        "connection": {
-                            "name": "@parameters('$connections')['googledrive']['connectionId']"
-                        }
-                    },
-                    "method": "put",
-                    "body": "@body('Get_blob_content_ALL_Alert')",
-                    "path": "/datasets/default/files/@{encodeURIComponent(encodeURIComponent('1QMoMHXZZQ3XAdZJdnmLNPKCs9PKB5jNu'))}"
-                },
-                "runAfter": {
-                    "Create_file_ALL_Alert": [
-                        "Failed",
-                        "Succeeded"
-                    ]
-                },
-                "metadata": {
-                    "1Fx8AfL9wmmltmlbltkx3wi2n5Ef6VTyO": "/csv/all_last_month.csv",
-                    "1QMoMHXZZQ3XAdZJdnmLNPKCs9PKB5jNu": "/csv/log_analytics_last30days.csv"
-                }
-            },
-            "Update_file_Sintetico": {
-                "type": "ApiConnection",
-                "inputs": {
-                    "host": {
-                        "connection": {
-                            "name": "@parameters('$connections')['googledrive']['connectionId']"
-                        }
-                    },
-                    "method": "put",
-                    "body": "@body('Get_blob_content_Sintetico_Alert')",
-                    "path": "/datasets/default/files/@{encodeURIComponent(encodeURIComponent('1UJEPSY1ZeLaxNJ_xDOPIOecXUBvIcVET'))}"
-                },
-                "runAfter": {
-                    "Create_file_Sintetico_Alert": [
-                        "Succeeded",
-                        "Failed"
-                    ]
-                },
-                "metadata": {
-                    "1dB25IQeRuj5iZyhcTUfrhU5wckGZDYcD": "/csv/sintetico_last_month.csv",
-                    "1UJEPSY1ZeLaxNJ_xDOPIOecXUBvIcVET": "/csv/sintesi_last30days.csv"
-                }
-            },
-            "Get_blob_content_Sintetico_Json": {
-                "type": "ApiConnection",
-                "inputs": {
-                    "host": {
-                        "connection": {
-                            "name": "@parameters('$connections')['azureblob']['connectionId']"
-                        }
-                    },
-                    "method": "get",
-                    "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('https://exportalertdevitnrg.blob.core.windows.net'))}/files/@{encodeURIComponent(encodeURIComponent('JTJmY3N2JTJmc2ludGVzaV9sYXN0MzBkYXlzLmpzb24='))}/content",
-                    "queries": {
-                        "inferContentType": true
-                    }
-                },
-                "runAfter": {},
-                "metadata": {
-                    "JTJmY3N2JTJmc2ludGVzaV9sYXN0MzBkYXlzLmpzb24=": "/csv/sintesi_last30days.json"
-                }
-            },
-            "Parse_JSON": {
-                "type": "ParseJson",
-                "inputs": {
-                    "content": "@json(body('Get_blob_content_Sintetico_Json'))",
-                    "schema": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "prodotto": {
-                                    "type": "string"
-                                },
-                                "data": {
-                                    "type": "string"
-                                },
-                                "issue_totali": {
-                                    "type": "integer"
-                                },
-                                "issue_high": {
-                                    "type": "integer"
-                                },
-                                "issue_medium": {
-                                    "type": "integer"
-                                },
-                                "issue_low": {
-                                    "type": "integer"
-                                },
-                                "issue_dismissed": {
-                                    "type": "integer"
-                                },
-                                "change_last_12_month": {
-                                    "type": "integer"
-                                },
-                                "change_last_month": {
-                                    "type": "integer"
-                                }
-                            },
-                            "required": [
-                                "prodotto",
-                                "data",
-                                "issue_totali",
-                                "issue_high",
-                                "issue_medium",
-                                "issue_low",
-                                "issue_dismissed",
-                                "change_last_12_month",
-                                "change_last_month"
-                            ]
-                        }
-                    }
-                },
-                "runAfter": {
-                    "Get_blob_content_Sintetico_Json": [
-                        "Succeeded"
-                    ]
-                }
-            },
-            "For_each": {
-                "type": "Foreach",
-                "foreach": "@body('Parse_JSON')",
-                "actions": {
-                    "Insert_row": {
-                        "type": "ApiConnection",
-                        "inputs": {
-                            "host": {
-                                "connection": {
-                                    "name": "@parameters('$connections')['googlesheet']['connectionId']"
-                                }
-                            },
-                            "method": "post",
-                            "body": {
-                                "prodotto": "@item()['prodotto']",
-                                "data": "@item()['data']",
-                                "issue_totali": "@int(item()['issue_totali'])",
-                                "issue_high": "@item()['issue_high']",
-                                "issue_medium": "@item()['issue_medium']",
-                                "issue_low": "@item()['issue_low']",
-                                "issue_dismissed": "@item()['issue_dismissed']",
-                                "change_last_12_month": "@item()['change_last_12_month']",
-                                "change_last_month": "@item()['change_last_month']"
-                            },
-                            "path": "/datasets/@{encodeURIComponent(encodeURIComponent('1ydzkrPsJ8TBO87plq0pGJWVdsBI_gd2xWkEiiMzVYI4'))}/tables/@{encodeURIComponent(encodeURIComponent('602137759'))}/items"
-                        },
-                        "operationOptions": "DisableAsyncPattern, DisableAutomaticDecompression",
-                        "metadata": {
-                            "1ydzkrPsJ8TBO87plq0pGJWVdsBI_gd2xWkEiiMzVYI4": "/csv/Dahsboard_Update"
-                        }
-                    }
-                },
-                "runAfter": {
-                    "Parse_JSON": [
-                        "Succeeded"
-                    ]
-                },
-                "runtimeConfiguration": {
-                    "concurrency": {
-                        "repetitions": 1
-                    }
-                }
-            }
+        "connections_googledrive_externalid": {
+            "defaultValue": "/subscriptions/a001fc05-3125-4940-bbe0-7ef4125a8263/resourceGroups/org-p-govd-rg/providers/Microsoft.Web/connections/googledrive",
+            "type": "String"
         },
-        "outputs": {},
-        "parameters": {
-            "$connections": {
-                "type": "Object",
-                "defaultValue": {}
-            }
+        "connections_googlesheet_externalid": {
+            "defaultValue": "/subscriptions/a001fc05-3125-4940-bbe0-7ef4125a8263/resourceGroups/org-p-govd-rg/providers/Microsoft.Web/connections/googlesheet",
+            "type": "String"
+        },
+        "connections_azureblob_externalid": {
+            "defaultValue": "/subscriptions/a001fc05-3125-4940-bbe0-7ef4125a8263/resourceGroups/org-p-govd-rg/providers/Microsoft.Web/connections/azureblob",
+            "type": "String"
         }
     },
-    "parameters": {
-        "$connections": {
-            "type": "Object",
-            "value": {
-                "azureblob": {
-                    "id": "/subscriptions/ac17914c-79bf-48fa-831e-1359ef74c1d5/providers/Microsoft.Web/locations/italynorth/managedApis/azureblob",
-                    "connectionId": "/subscriptions/ac17914c-79bf-48fa-831e-1359ef74c1d5/resourceGroups/exportadvisorpolicyalert-dev-itn-rg/providers/Microsoft.Web/connections/azureblob",
-                    "connectionName": "azureblob",
-                    "connectionProperties": {
-                        "authentication": {
-                            "type": "ManagedServiceIdentity"
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Logic/workflows",
+            "apiVersion": "2017-07-01",
+            "name": "[parameters('workflows_org_p_govd_law_name')]",
+            "location": "italynorth",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {
+                        "$connections": {
+                            "defaultValue": {},
+                            "type": "Object"
+                        }
+                    },
+                    "triggers": {
+                        "http-trigger": {
+                            "type": "Request",
+                            "kind": "Http",
+                            "inputs": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "actions": {
+                        "Create_file_ALL_Alert": {
+                            "runAfter": {
+                                "Get_blob_content_ALL_Alert": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['googledrive']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "body": "@body('Get_blob_content_ALL_Alert')",
+                                "path": "/datasets/default/files",
+                                "queries": {
+                                    "folderPath": "/csv/",
+                                    "name": "log_analytics_last30days.csv",
+                                    "queryParametersSingleEncoded": true
+                                }
+                            }
+                        },
+                        "Create_file_Sintetico_Alert": {
+                            "runAfter": {
+                                "Get_blob_content_Sintetico_Alert": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['googledrive']['connectionId']"
+                                    }
+                                },
+                                "method": "post",
+                                "body": "@body('Get_blob_content_Sintetico_Alert')",
+                                "path": "/datasets/default/files",
+                                "queries": {
+                                    "folderPath": "/csv/",
+                                    "name": "sintesi_last30days.csv",
+                                    "queryParametersSingleEncoded": true
+                                }
+                            }
+                        },
+                        "For_each": {
+                            "foreach": "@body('Parse_JSON')",
+                            "actions": {
+                                "Insert_row": {
+                                    "metadata": {
+                                        "1ydzkrPsJ8TBO87plq0pGJWVdsBI_gd2xWkEiiMzVYI4": "/csv/Dahsboard_Update"
+                                    },
+                                    "type": "ApiConnection",
+                                    "inputs": {
+                                        "host": {
+                                            "connection": {
+                                                "name": "@parameters('$connections')['googlesheet']['connectionId']"
+                                            }
+                                        },
+                                        "method": "post",
+                                        "body": {
+                                            "prodotto": "@item()['prodotto']",
+                                            "data": "@item()['data']",
+                                            "issue_totali": "@int(item()['issue_totali'])",
+                                            "issue_high": "@item()['issue_high']",
+                                            "issue_medium": "@item()['issue_medium']",
+                                            "issue_low": "@item()['issue_low']",
+                                            "issue_dismissed": "@item()['issue_dismissed']",
+                                            "change_last_12_month": "@item()['change_last_12_month']",
+                                            "change_last_month": "@item()['change_last_month']"
+                                        },
+                                        "path": "/datasets/@{encodeURIComponent(encodeURIComponent('1ydzkrPsJ8TBO87plq0pGJWVdsBI_gd2xWkEiiMzVYI4'))}/tables/@{encodeURIComponent(encodeURIComponent('602137759'))}/items"
+                                    },
+                                    "operationOptions": "DisableAsyncPattern, DisableAutomaticDecompression"
+                                }
+                            },
+                            "runAfter": {
+                                "Parse_JSON": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Foreach",
+                            "runtimeConfiguration": {
+                                "concurrency": {
+                                    "repetitions": 1
+                                }
+                            }
+                        },
+                        "Get_blob_content_ALL_Alert": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureblob']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('https://orgpgovdst.blob.core.windows.net/'))}/files/@{encodeURIComponent(encodeURIComponent('/csv/log_analytics_last30days.csv'))}/content",
+                                "queries": {
+                                    "inferContentType": true
+                                }
+                            }
+                        },
+                        "Get_blob_content_Sintetico_Alert": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureblob']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('https://orgpgovdst.blob.core.windows.net/'))}/files/@{encodeURIComponent(encodeURIComponent('/csv/sintesi_last30days.csv'))}/content",
+                                "queries": {
+                                    "inferContentType": true
+                                }
+                            }
+                        },
+                        "Get_blob_content_Sintetico_Json": {
+                            "runAfter": {},
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['azureblob']['connectionId']"
+                                    }
+                                },
+                                "method": "get",
+                                "path": "/v2/datasets/@{encodeURIComponent(encodeURIComponent('https://orgpgovdst.blob.core.windows.net/'))}/files/@{encodeURIComponent(encodeURIComponent('/csv/sintesi_last30days.json'))}/content",
+                                "queries": {
+                                    "inferContentType": true
+                                }
+                            }
+                        },
+                        "Parse_JSON": {
+                            "runAfter": {
+                                "Get_blob_content_Sintetico_Json": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "ParseJson",
+                            "inputs": {
+                                "content": "@json(body('Get_blob_content_Sintetico_Json'))",
+                                "schema": {
+                                    "items": {
+                                        "properties": {
+                                            "change_last_12_month": {
+                                                "type": "integer"
+                                            },
+                                            "change_last_month": {
+                                                "type": "integer"
+                                            },
+                                            "data": {
+                                                "type": "string"
+                                            },
+                                            "issue_dismissed": {
+                                                "type": "integer"
+                                            },
+                                            "issue_high": {
+                                                "type": "integer"
+                                            },
+                                            "issue_low": {
+                                                "type": "integer"
+                                            },
+                                            "issue_medium": {
+                                                "type": "integer"
+                                            },
+                                            "issue_totali": {
+                                                "type": "integer"
+                                            },
+                                            "prodotto": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "required": [
+                                            "prodotto",
+                                            "data",
+                                            "issue_totali",
+                                            "issue_high",
+                                            "issue_medium",
+                                            "issue_low",
+                                            "issue_dismissed",
+                                            "change_last_12_month",
+                                            "change_last_month"
+                                        ],
+                                        "type": "object"
+                                    },
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "Update_file_ALL": {
+                            "runAfter": {
+                                "Create_file_ALL_Alert": [
+                                    "Failed",
+                                    "Succeeded"
+                                ]
+                            },
+                            "metadata": {
+                                "1QMoMHXZZQ3XAdZJdnmLNPKCs9PKB5jNu": "/csv/log_analytics_last30days.csv"
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['googledrive']['connectionId']"
+                                    }
+                                },
+                                "method": "put",
+                                "body": "@body('Get_blob_content_ALL_Alert')",
+                                "path": "/datasets/default/files/@{encodeURIComponent(encodeURIComponent('1QMoMHXZZQ3XAdZJdnmLNPKCs9PKB5jNu'))}"
+                            }
+                        },
+                        "Update_file_Sintetico": {
+                            "runAfter": {
+                                "Create_file_Sintetico_Alert": [
+                                    "Succeeded",
+                                    "Failed"
+                                ]
+                            },
+                            "metadata": {
+                                "1UJEPSY1ZeLaxNJ_xDOPIOecXUBvIcVET": "/csv/sintesi_last30days.csv"
+                            },
+                            "type": "ApiConnection",
+                            "inputs": {
+                                "host": {
+                                    "connection": {
+                                        "name": "@parameters('$connections')['googledrive']['connectionId']"
+                                    }
+                                },
+                                "method": "put",
+                                "body": "@body('Get_blob_content_Sintetico_Alert')",
+                                "path": "/datasets/default/files/@{encodeURIComponent(encodeURIComponent('1UJEPSY1ZeLaxNJ_xDOPIOecXUBvIcVET'))}"
+                            }
                         }
                     }
                 },
-                "googledrive": {
-                    "id": "/subscriptions/ac17914c-79bf-48fa-831e-1359ef74c1d5/providers/Microsoft.Web/locations/italynorth/managedApis/googledrive",
-                    "connectionId": "/subscriptions/ac17914c-79bf-48fa-831e-1359ef74c1d5/resourceGroups/exportadvisorpolicyalert-dev-itn-rg/providers/Microsoft.Web/connections/googledrive",
-                    "connectionName": "googledrive"
-                },
-                "googlesheet": {
-                    "id": "/subscriptions/ac17914c-79bf-48fa-831e-1359ef74c1d5/providers/Microsoft.Web/locations/italynorth/managedApis/googlesheet",
-                    "connectionId": "/subscriptions/ac17914c-79bf-48fa-831e-1359ef74c1d5/resourceGroups/exportadvisorpolicyalert-dev-itn-rg/providers/Microsoft.Web/connections/googlesheet",
-                    "connectionName": "googlesheet"
+                "parameters": {
+                    "$connections": {
+                        "value": {
+                            "googledrive": {
+                                "id": "/subscriptions/a001fc05-3125-4940-bbe0-7ef4125a8263/providers/Microsoft.Web/locations/italynorth/managedApis/googledrive",
+                                "connectionId": "[parameters('connections_googledrive_externalid')]",
+                                "connectionName": "googledrive"
+                            },
+                            "googlesheet": {
+                                "id": "/subscriptions/a001fc05-3125-4940-bbe0-7ef4125a8263/providers/Microsoft.Web/locations/italynorth/managedApis/googlesheet",
+                                "connectionId": "[parameters('connections_googlesheet_externalid')]",
+                                "connectionName": "googlesheet"
+                            },
+                            "azureblob": {
+                                "id": "/subscriptions/a001fc05-3125-4940-bbe0-7ef4125a8263/providers/Microsoft.Web/locations/italynorth/managedApis/azureblob",
+                                "connectionId": "[parameters('connections_azureblob_externalid')]",
+                                "connectionName": "azureblob",
+                                "connectionProperties": {
+                                    "authentication": {
+                                        "type": "ManagedServiceIdentity"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
+    ]
 }
