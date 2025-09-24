@@ -2,7 +2,6 @@ name: Run Dashboard Script for AWS and Azure
 
 env:
   AWS_REGION: eu-south-1
-  #IAM_ROLE: arn:aws:iam::519902559805:role/GitHubActionIACRoleR
   IAM_ROLE: DashboardGovRole
   IAM_ROLE_ROOT: arn:aws:iam::155090677366:role/dashboard_gov_role
   AZ_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -52,8 +51,8 @@ jobs:
       - name: install-py-deps
         run: pip3 install --require-hashes --requirement src/scripts/requirements.txt
 
-      #- name: Run Python script aws_dashboard_health multiaccount
-      #  run: python src/scripts/awscli_export_aws_dashboard_health_loganalytics_multiaccount.py
+      - name: Run Python script aws_dashboard_health multiaccount
+        run: python src/scripts/awscli_export_aws_dashboard_health_loganalytics_multiaccount.py
 
       - name: Run Python script aws_trusted_advisor multiaccount
         run: python src/scripts/awscli_export_aws_trusted_advisor_loganalytics_multiaccount-opt.py
@@ -74,9 +73,9 @@ jobs:
       - name: Run Python script Upload file Storage
         run: python src/scripts/upload_csv_json_last_month.py
 
-      - name: Run Logic App
-        run: |
-          curl -X POST "${{ secrets.AZURE_LOGICAPP_TRIGGER }}"
+      #- name: Run Logic App
+      #  run: |
+      #    curl -X POST "${{ secrets.AZURE_LOGICAPP_TRIGGER }}"
 
       #- name: Notify Slack on Failure
       #  if: failure()

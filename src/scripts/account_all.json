@@ -1,0 +1,682 @@
+{
+  "Management": {
+    "email": "devops+mgmt@pagopa.it",
+    "id": "155090677366",
+    "name": "Management",
+    "project_path": "technology",
+    "service_line": "Management",
+    "signin_url": "https://155090677366.signin.aws.amazon.com/console"
+  },
+  "Pdnd Datalake": {
+    "email": "pdnd-datalake+aws-pdnd-datalake-prod@pagopa.it",
+    "id": "688071769384",
+    "name": "Pdnd Datalake",
+    "project_path": "datalake",
+    "service_line": "PDND DataLake",
+    "signin_url": "https://688071769384.signin.aws.amazon.com/console"
+  },
+  "b2b-portals-prod": {
+    "email": "b2b-portals+prod@pagopa.it",
+    "id": "949355639119",
+    "name": "b2b-portals-prod",
+    "project_path": "b2b-portals",
+    "service_line": "Portals and Tools",
+    "signin_url": "https://949355639119.signin.aws.amazon.com/console"
+  },
+  "cnf-portal": {
+    "email": "devops+cnfportal@pagopa.it",
+    "id": "484090360549",
+    "name": "cnf-portal",
+    "project_path": "unknown",
+    "service_line": null,
+    "signin_url": "https://484090360549.signin.aws.amazon.com/console"
+  },
+  "cstar-dev": {
+    "email": "cstar-aws-admin+dev@pagopa.it",
+    "id": "088581047049",
+    "name": "cstar-dev",
+    "project_path": "cstar",
+    "service_line": "cstar",
+    "signin_url": "https://088581047049.signin.aws.amazon.com/console"
+  },
+  "cstar-prod": {
+    "email": "cstar-aws-admin+prod@pagopa.it",
+    "id": "743092816395",
+    "name": "cstar-prod",
+    "project_path": "cstar",
+    "service_line": "cstar",
+    "signin_url": "https://743092816395.signin.aws.amazon.com/console"
+  },
+  "cstar-uat": {
+    "email": "cstar-aws-admin+uat@pagopa.it",
+    "id": "911634253006",
+    "name": "cstar-uat",
+    "project_path": "cstar",
+    "service_line": "cstar",
+    "signin_url": "https://911634253006.signin.aws.amazon.com/console"
+  },
+  "data-strategy-dev": {
+    "email": "ppa-team-data-strategy+dev@pagopa.it",
+    "id": "195275648260",
+    "name": "data-strategy-dev",
+    "project_path": "datastrategy",
+    "service_line": "Data Strategy",
+    "signin_url": "https://195275648260.signin.aws.amazon.com/console"
+  },
+  "data-strategy-prod": {
+    "email": "ppa-team-data-strategy@pagopa.it",
+    "id": "872515275586",
+    "name": "data-strategy-prod",
+    "project_path": "datastrategy",
+    "service_line": "Data Strategy",
+    "signin_url": "https://872515275586.signin.aws.amazon.com/console"
+  },
+  "devex-dev": {
+    "email": "team-devex+awsdev@pagopa.it",
+    "id": "366865817117",
+    "name": "devex-dev",
+    "project_path": "engineering",
+    "service_line": "Engineering",
+    "signin_url": "https://366865817117.signin.aws.amazon.com/console"
+  },
+  "devportal-dev": {
+    "email": "devportal+dev@pagopa.it",
+    "id": "039804388894",
+    "name": "devportal-dev",
+    "project_path": "devportal",
+    "service_line": "Portals and Tools",
+    "signin_url": "https://039804388894.signin.aws.amazon.com/console"
+  },
+  "devportal-prod": {
+    "email": "devportal+prod@pagopa.it",
+    "id": "195239627635",
+    "name": "devportal-prod",
+    "project_path": "devportal",
+    "service_line": "Portals and Tools",
+    "signin_url": "https://195239627635.signin.aws.amazon.com/console"
+  },
+  "devportal-uat": {
+    "email": "devportal+uat@pagopa.it",
+    "id": "597088011900",
+    "name": "devportal-uat",
+    "project_path": "devportal",
+    "service_line": "Portals and Tools",
+    "signin_url": "https://597088011900.signin.aws.amazon.com/console"
+  },
+  "engineering-tools-dev": {
+    "email": "engineering-tools+dev@pagopa.it",
+    "id": "767397863817",
+    "name": "engineering-tools-dev",
+    "project_path": "engineering",
+    "service_line": "Engineering",
+    "signin_url": "https://767397863817.signin.aws.amazon.com/console"
+  },
+  "firmaconio-prod": {
+    "email": "firmaconio-tech+awsprod@pagopa.it",
+    "id": "933026763081",
+    "name": "firmaconio-prod",
+    "project_path": "io",
+    "service_line": "Firmacon io",
+    "signin_url": "https://933026763081.signin.aws.amazon.com/console"
+  },
+  "interop-extra-att": {
+    "email": "interop-extra+att@pagopa.it",
+    "id": "225989375416",
+    "name": "interop-extra-att",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://225989375416.signin.aws.amazon.com/console"
+  },
+  "interop-extra-dev": {
+    "email": "interop-extra+dev@pagopa.it",
+    "id": "590183909663",
+    "name": "interop-extra-dev",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://590183909663.signin.aws.amazon.com/console"
+  },
+  "interop-extra-prod": {
+    "email": "interop-extra+prod@pagopa.it",
+    "id": "211125526167",
+    "name": "interop-extra-prod",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://211125526167.signin.aws.amazon.com/console"
+  },
+  "interop-extra-qa": {
+    "email": "interop-extra+qa@pagopa.it",
+    "id": "537124933279",
+    "name": "interop-extra-qa",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://537124933279.signin.aws.amazon.com/console"
+  },
+  "interop-extra-uat": {
+    "email": "interop-extra+uat@pagopa.it",
+    "id": "637423185147",
+    "name": "interop-extra-uat",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://637423185147.signin.aws.amazon.com/console"
+  },
+  "interop-extra-vapt": {
+    "email": "interop-extra+vapt@pagopa.it",
+    "id": "971422683460",
+    "name": "interop-extra-vapt",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://971422683460.signin.aws.amazon.com/console"
+  },
+  "interop-probing-dev": {
+    "email": "interop-probing+dev@pagopa.it",
+    "id": "774300547186",
+    "name": "interop-probing-dev",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://774300547186.signin.aws.amazon.com/console"
+  },
+  "interop-probing-prod": {
+    "email": "interop-probing+prod@pagopa.it",
+    "id": "861877745473",
+    "name": "interop-probing-prod",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://861877745473.signin.aws.amazon.com/console"
+  },
+  "interop-probing-uat": {
+    "email": "interop-probing+uat@pagopa.it",
+    "id": "010158505074",
+    "name": "interop-probing-uat",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://010158505074.signin.aws.amazon.com/console"
+  },
+  "interop-safe-storage-prod": {
+    "email": "interop-safe-storage+prod@pagopa.it",
+    "id": "730335668132",
+    "name": "interop-safe-storage-prod",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://730335668132.signin.aws.amazon.com/console"
+  },
+  "interop-safe-storage-uat": {
+    "email": "interop-safe-storage+uat@pagopa.it",
+    "id": "891377202032",
+    "name": "interop-safe-storage-uat",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://891377202032.signin.aws.amazon.com/console"
+  },
+  "interop-signalhub-att": {
+    "email": "interop-signalhub+att@pagopa.it",
+    "id": "861276092552",
+    "name": "interop-signalhub-att",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://861276092552.signin.aws.amazon.com/console"
+  },
+  "interop-signalhub-dev": {
+    "email": "interop-signalhub+dev@pagopa.it",
+    "id": "058264553932",
+    "name": "interop-signalhub-dev",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://058264553932.signin.aws.amazon.com/console"
+  },
+  "interop-signalhub-prod": {
+    "email": "interop-signalhub+prod@pagopa.it",
+    "id": "058264142001",
+    "name": "interop-signalhub-prod",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://058264142001.signin.aws.amazon.com/console"
+  },
+  "interop-signalhub-uat": {
+    "email": "interop-signalhub+uat@pagopa.it",
+    "id": "654654262692",
+    "name": "interop-signalhub-uat",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://654654262692.signin.aws.amazon.com/console"
+  },
+  "interop-signalhub-vapt": {
+    "email": "interop-signalhub+vapt@pagopa.it",
+    "id": "329599626446",
+    "name": "interop-signalhub-vapt",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://329599626446.signin.aws.amazon.com/console"
+  },
+  "pdnd-datalake-ai-send-dev": {
+    "email": "pdnd-datalake-ai-send+aws-pdnd-datalake-ai-dev@pagopa.it",
+    "id": "379196425703",
+    "name": "pdnd-datalake-ai-send-dev",
+    "project_path": "datalake",
+    "service_line": "PDND DataLake",
+    "signin_url": "https://379196425703.signin.aws.amazon.com/console"
+  },
+  "pdnd-datalake-ai-send-prod": {
+    "email": "pdnd-datalake-ai-send+aws-pdnd-datalake-ai-prod@pagopa.it",
+    "id": "660376549406",
+    "name": "pdnd-datalake-ai-send-prod",
+    "project_path": "datalake",
+    "service_line": "PDND DataLake",
+    "signin_url": "https://660376549406.signin.aws.amazon.com/console"
+  },
+  "pdnd-datalake-ai-send-uat": {
+    "email": "pdnd-datalake-ai-send+aws-pdnd-datalake-ai-uat@pagopa.it",
+    "id": "244373587326",
+    "name": "pdnd-datalake-ai-send-uat",
+    "project_path": "datalake",
+    "service_line": "PDND DataLake",
+    "signin_url": "https://244373587326.signin.aws.amazon.com/console"
+  },
+  "pdnd-datalake-dtd-dev": {
+    "email": "pdnd-datalake-dtd+aws-pdnd-datalake-dtd-dev@pagopa.it",
+    "id": "607570805415",
+    "name": "pdnd-datalake-dtd-dev",
+    "project_path": "datalake",
+    "service_line": "PDND DataLake",
+    "signin_url": "https://607570805415.signin.aws.amazon.com/console"
+  },
+  "pdnd-datalake-dtd-prod": {
+    "email": "pdnd-datalake-dtd+aws-pdnd-datalake-dtd-prod@pagopa.it",
+    "id": "939966404208",
+    "name": "pdnd-datalake-dtd-prod",
+    "project_path": "datalake",
+    "service_line": "PDND DataLake",
+    "signin_url": "https://939966404208.signin.aws.amazon.com/console"
+  },
+  "pdnd-interop-attestazione": {
+    "email": "pdnd-interop+attestazione@pagopa.it",
+    "id": "533267098416",
+    "name": "pdnd-interop-attestazione",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://533267098416.signin.aws.amazon.com/console"
+  },
+  "pdnd-interop-dev": {
+    "email": "pdnd-interop+dev@pagopa.it",
+    "id": "505630707203",
+    "name": "pdnd-interop-dev",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://505630707203.signin.aws.amazon.com/console"
+  },
+  "pdnd-interop-prod": {
+    "email": "pdnd-interop+prod@pagopa.it",
+    "id": "697818730278",
+    "name": "pdnd-interop-prod",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://697818730278.signin.aws.amazon.com/console"
+  },
+  "pdnd-interop-qa": {
+    "email": "pdnd-interop+qa@pagopa.it",
+    "id": "755649575658",
+    "name": "pdnd-interop-qa",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://755649575658.signin.aws.amazon.com/console"
+  },
+  "pdnd-interop-sandbox": {
+    "email": "pdnd-interop+sandbox@pagopa.it",
+    "id": "248862543363",
+    "name": "pdnd-interop-sandbox",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://248862543363.signin.aws.amazon.com/console"
+  },
+  "pdnd-interop-test": {
+    "email": "pdnd-interop+test@pagopa.it",
+    "id": "895646477129",
+    "name": "pdnd-interop-test",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://895646477129.signin.aws.amazon.com/console"
+  },
+  "pdnd-interop-vapt": {
+    "email": "pdnd-interop+vapt@pagopa.it",
+    "id": "565393043798",
+    "name": "pdnd-interop-vapt",
+    "project_path": "interop",
+    "service_line": "Piattaforma Interoperabilita",
+    "signin_url": "https://565393043798.signin.aws.amazon.com/console"
+  },
+  "pn-analytics": {
+    "email": "pn-analytics@pagopa.it",
+    "id": "170533023216",
+    "name": "pn-analytics",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://170533023216.signin.aws.amazon.com/console"
+  },
+  "pn-confinfo-dev": {
+    "email": "pn-confinfo-dev@pagopa.it",
+    "id": "089813480515",
+    "name": "pn-confinfo-dev",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://089813480515.signin.aws.amazon.com/console"
+  },
+  "pn-confinfo-hotfix": {
+    "email": "pn-confinfo-hotfix@pagopa.it",
+    "id": "839620963891",
+    "name": "pn-confinfo-hotfix",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://839620963891.signin.aws.amazon.com/console"
+  },
+  "pn-confinfo-prod": {
+    "email": "pn-confinfo-prod@pagopa.it",
+    "id": "350578575906",
+    "name": "pn-confinfo-prod",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://350578575906.signin.aws.amazon.com/console"
+  },
+  "pn-confinfo-test": {
+    "email": "pn-confinfo-test@pagopa.it",
+    "id": "771887334808",
+    "name": "pn-confinfo-test",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://771887334808.signin.aws.amazon.com/console"
+  },
+  "pn-confinfo-uat": {
+    "email": "pn-confinfo-uat@pagopa.it",
+    "id": "956319218727",
+    "name": "pn-confinfo-uat",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://956319218727.signin.aws.amazon.com/console"
+  },
+  "pn-core-dev": {
+    "email": "pn-core-dev@pagopa.it",
+    "id": "830192246553",
+    "name": "pn-core-dev",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://830192246553.signin.aws.amazon.com/console"
+  },
+  "pn-core-hotfix": {
+    "email": "pn-core-hotfix@pagopa.it",
+    "id": "207905393513",
+    "name": "pn-core-hotfix",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://207905393513.signin.aws.amazon.com/console"
+  },
+  "pn-core-prod": {
+    "email": "pn-core-prod@pagopa.it",
+    "id": "510769970275",
+    "name": "pn-core-prod",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://510769970275.signin.aws.amazon.com/console"
+  },
+  "pn-core-test": {
+    "email": "pn-core-test@pagopa.it",
+    "id": "151559006927",
+    "name": "pn-core-test",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://151559006927.signin.aws.amazon.com/console"
+  },
+  "pn-core-uat": {
+    "email": "pn-core-uat@pagopa.it",
+    "id": "644374009812",
+    "name": "pn-core-uat",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://644374009812.signin.aws.amazon.com/console"
+  },
+  "ppa-alma-dev": {
+    "email": "team-ppa-alma+dev@pagopa.it",
+    "id": "053582790598",
+    "name": "ppa-alma-dev",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://053582790598.signin.aws.amazon.com/console"
+  },
+  "ppa-assistenza-dev": {
+    "email": "assistenza-operations+dev@pagopa.it",
+    "id": "533236674075",
+    "name": "ppa-assistenza-dev",
+    "project_path": "technology",
+    "service_line": "Assistenza",
+    "signin_url": "https://533236674075.signin.aws.amazon.com/console"
+  },
+  "ppa-assistenza-prod": {
+    "email": "assistenza-operations+prod@pagopa.it",
+    "id": "277345554283",
+    "name": "ppa-assistenza-prod",
+    "project_path": "technology",
+    "service_line": "Assistenza",
+    "signin_url": "https://277345554283.signin.aws.amazon.com/console"
+  },
+  "ppa-cloud-strategy-dev": {
+    "email": "cloud-engineering+dev@pagopa.it",
+    "id": "570790165558",
+    "name": "ppa-cloud-strategy-dev",
+    "project_path": "technology",
+    "service_line": "cloud",
+    "signin_url": "https://570790165558.signin.aws.amazon.com/console"
+  },
+  "ppa-corporate-site-dev": {
+    "email": "team-corporate-site+dev@pagopa.it",
+    "id": "937305744804",
+    "name": "ppa-corporate-site-dev",
+    "project_path": "corporate",
+    "service_line": "Corporate WebSites",
+    "signin_url": "https://937305744804.signin.aws.amazon.com/console"
+  },
+  "ppa-corporate-site-prod": {
+    "email": "team-corporate-site+prod@pagopa.it",
+    "id": "573740557884",
+    "name": "ppa-corporate-site-prod",
+    "project_path": "corporate",
+    "service_line": "Corporate WebSites",
+    "signin_url": "https://573740557884.signin.aws.amazon.com/console"
+  },
+  "ppa-eng-ca-dev": {
+    "email": "team-ppa-eng-ca+dev@pagopa.it",
+    "id": "793355522647",
+    "name": "ppa-eng-ca-dev",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://793355522647.signin.aws.amazon.com/console"
+  },
+  "ppa-eng-ca-prod": {
+    "email": "team-ppa-eng-ca+prod@pagopa.it",
+    "id": "434166889297",
+    "name": "ppa-eng-ca-prod",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://434166889297.signin.aws.amazon.com/console"
+  },
+  "ppa-eng-ccdn-prod": {
+    "email": "team-ppa-eng-ccdn+prod@pagopa.it",
+    "id": "658771194268",
+    "name": "ppa-eng-ccdn-prod",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://658771194268.signin.aws.amazon.com/console"
+  },
+  "ppa-eng-gha-prod": {
+    "email": "team-ppa-eng-gha+prod@pagopa.it",
+    "id": "150730820620",
+    "name": "ppa-eng-gha-prod",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://150730820620.signin.aws.amazon.com/console"
+  },
+  "ppa-eng-is-dev": {
+    "email": "team-ppa-eng-is+dev@pagopa.it",
+    "id": "001102221608",
+    "name": "ppa-eng-is-dev",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://001102221608.signin.aws.amazon.com/console"
+  },
+  "ppa-eng-is-prod": {
+    "email": "team-ppa-eng-is+prod@pagopa.it",
+    "id": "116453376486",
+    "name": "ppa-eng-is-prod",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://116453376486.signin.aws.amazon.com/console"
+  },
+  "ppa-git-watchdog": {
+    "email": "prodsec@pagopa.it",
+    "id": "313517653445",
+    "name": "ppa-git-watchdog",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://313517653445.signin.aws.amazon.com/console"
+  },
+  "ppa-oneidentity-assertions": {
+    "email": "team-oneidentity+assertions@pagopa.it",
+    "id": "980921732883",
+    "name": "ppa-oneidentity-assertions",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://980921732883.signin.aws.amazon.com/console"
+  },
+  "ppa-oneidentity-dev": {
+    "email": "team-oneidentity+dev@pagopa.it",
+    "id": "471112878885",
+    "name": "ppa-oneidentity-dev",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://471112878885.signin.aws.amazon.com/console"
+  },
+  "ppa-oneidentity-prod": {
+    "email": "team-oneidentity+prod@pagopa.it",
+    "id": "851725347804",
+    "name": "ppa-oneidentity-prod",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://851725347804.signin.aws.amazon.com/console"
+  },
+  "ppa-oneidentity-uat": {
+    "email": "team-oneidentity+uat@pagopa.it",
+    "id": "145023115481",
+    "name": "ppa-oneidentity-uat",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://145023115481.signin.aws.amazon.com/console"
+  },
+  "ppa-pagopa-dev": {
+    "email": "pagopa-tech+dev@pagopa.it",
+    "id": "407424444552",
+    "name": "ppa-pagopa-dev",
+    "project_path": "pagopa",
+    "service_line": "pagoPa",
+    "signin_url": "https://407424444552.signin.aws.amazon.com/console"
+  },
+  "ppa-pagopa-prod": {
+    "email": "pagopa-tech@pagopa.it",
+    "id": "474889267613",
+    "name": "ppa-pagopa-prod",
+    "project_path": "pagopa",
+    "service_line": "pagoPa",
+    "signin_url": "https://474889267613.signin.aws.amazon.com/console"
+  },
+  "ppa-pagopa-uat": {
+    "email": "pagopa-tech+uat@pagopa.it",
+    "id": "849780198318",
+    "name": "ppa-pagopa-uat",
+    "project_path": "pagopa",
+    "service_line": "pagoPa",
+    "signin_url": "https://849780198318.signin.aws.amazon.com/console"
+  },
+  "ppa-pagopa_product_website-prod": {
+    "email": "team-pagopa-gov-website@pagopa.it",
+    "id": "476761402556",
+    "name": "ppa-pagopa_product_website-prod",
+    "project_path": "pagopa",
+    "service_line": "pagoPa",
+    "signin_url": "https://476761402556.signin.aws.amazon.com/console"
+  },
+  "ppa-personal-data-vault-dev": {
+    "email": "team-user-registry+dev@pagopa.it",
+    "id": "418736607093",
+    "name": "ppa-personal-data-vault-dev",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://418736607093.signin.aws.amazon.com/console"
+  },
+  "ppa-personal-data-vault-prod": {
+    "email": "team-user-registry+prodaws@pagopa.it",
+    "id": "751495842760",
+    "name": "ppa-personal-data-vault-prod",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://751495842760.signin.aws.amazon.com/console"
+  },
+  "ppa-personal-data-vault-uat": {
+    "email": "team-user-registry+uat@pagopa.it",
+    "id": "189790882570",
+    "name": "ppa-personal-data-vault-uat",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://189790882570.signin.aws.amazon.com/console"
+  },
+  "ppa-piattaforma-notifiche-cicd": {
+    "email": "team-notifiche+pn_cicd@pagopa.it",
+    "id": "911845998067",
+    "name": "ppa-piattaforma-notifiche-cicd",
+    "project_path": "pn",
+    "service_line": "Piattaforme Notifiche",
+    "signin_url": "https://911845998067.signin.aws.amazon.com/console"
+  },
+  "ppa-subdomain-dev": {
+    "email": "ppa-subdomain-dev@pagopa.it",
+    "id": "637423468901",
+    "name": "ppa-subdomain-dev",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://637423468901.signin.aws.amazon.com/console"
+  },
+  "ppa-tokenizer-data-vault-dev": {
+    "email": "team-user-registry+tokenizer-dev@pagopa.it",
+    "id": "209688138459",
+    "name": "ppa-tokenizer-data-vault-dev",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://209688138459.signin.aws.amazon.com/console"
+  },
+  "ppa-tokenizer-data-vault-prod": {
+    "email": "team-user-registry+tokenizer-prod@pagopa.it",
+    "id": "449227190332",
+    "name": "ppa-tokenizer-data-vault-prod",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://449227190332.signin.aws.amazon.com/console"
+  },
+  "ppa-tokenizer-data-vault-uat": {
+    "email": "team-user-registry+tokenizer-uat@pagopa.it",
+    "id": "377122414966",
+    "name": "ppa-tokenizer-data-vault-uat",
+    "project_path": "technology",
+    "service_line": "tier0",
+    "signin_url": "https://377122414966.signin.aws.amazon.com/console"
+  },
+  "sandbox": {
+    "email": "devops+sandbox@pagopa.it",
+    "id": "794703684555",
+    "name": "sandbox",
+    "project_path": "technology",
+    "service_line": null,
+    "signin_url": "https://794703684555.signin.aws.amazon.com/console"
+  },
+  "selfcare-prod": {
+    "email": "selfcare-aws-prod@pagopa.it",
+    "id": "033960373180",
+    "name": "selfcare-prod",
+    "project_path": "selfcare",
+    "service_line": "Selfcare",
+    "signin_url": "https://033960373180.signin.aws.amazon.com/console"
+  }
+}
