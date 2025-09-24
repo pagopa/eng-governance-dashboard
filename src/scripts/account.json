@@ -2,17 +2,17 @@
   "sandbox1": {
     "email": "sandbox1@pagopa.it",
     "id": "794703684555",
-    "name": "sandbox1",
+    "name": "sandbox",
     "project_path": "sandbox1",
     "service_line": "sandbox1",
     "signin_url": "https://794703684555.signin.aws.amazon.com/console"
   },
   "sandbox2": {
-    "email": "sandbox2@pagopa.it",
-    "id": "794703684555",
-    "name": "sandbox2",
-    "project_path": "sandbox2",
-    "service_line": "sandbox2",
-    "signin_url": "https://794703684555.signin.aws.amazon.com/console"
+    "email": "ppa-cloud-strategy-dev@pagopa.it",
+    "id": "570790165558",
+    "name": "ppa-cloud-strategy-dev",
+    "project_path": "ppa-cloud-strategy-dev",
+    "service_line": "ppa-cloud-strategy-dev",
+    "signin_url": "https://570790165558.signin.aws.amazon.com/console"
   }
 }
