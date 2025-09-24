@@ -9,7 +9,7 @@ from azure.storage.blob import BlobServiceClient
 
 
 WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
-TABLE_NAME = "Alert_CL"
+TABLE_NAME = "Dashboard_CL"
 DAYS = 30
 PAGE_SIZE = 50000
 
