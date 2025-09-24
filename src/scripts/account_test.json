@@ -1,0 +1,18 @@
+{
+  "sandbox1": {
+    "email": "sandbox1@pagopa.it",
+    "id": "794703684555",
+    "name": "sandbox1",
+    "project_path": "sandbox1",
+    "service_line": "sandbox1",
+    "signin_url": "https://794703684555.signin.aws.amazon.com/console"
+  },
+  "sandbox2": {
+    "email": "sandbox2@pagopa.it",
+    "id": "794703684555",
+    "name": "sandbox2",
+    "project_path": "sandbox2",
+    "service_line": "sandbox2",
+    "signin_url": "https://794703684555.signin.aws.amazon.com/console"
+  }
+}
