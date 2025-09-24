@@ -72,6 +72,10 @@ jobs:
       - name: Run Python script Upload file Storage
         run: python src/scripts/upload_csv_json_last_month.py
 
+      - name: Run Logic App
+        run: |
+          curl -X POST "${{ secrets.AZURE_LOGICAPP_TRIGGER }}"
+
       - name: Notify Slack on Failure
         if: failure()
         uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d
