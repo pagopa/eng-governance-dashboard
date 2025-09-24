@@ -63,15 +63,15 @@ jobs:
       - name: Run Python script azure_security_policy
         run: python src/scripts/azcli_export_azure_security_policy_loganalytics.py
 
+      - name: Wait for Log Analytics ingestion
+        run: sleep 300
+
       - name: Re-Login to Azure
         uses: azure/login@a65d910e8af852a8061c627c456678983e180302
         with:
           client-id: ${{ env.AZ_CLIENT_ID }}
           tenant-id: ${{ env.AZ_TENANT_ID }}
           subscription-id: ${{ env.AZ_SUBSCRIPTION_ID }}
-
-      - name: Wait for Log Analytics ingestion
-        run: sleep 300
           
       - name: Run Python script Upload file Storage
         run: python src/scripts/upload_csv_json_last_month.py
