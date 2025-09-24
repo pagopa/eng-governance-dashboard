@@ -33,3 +33,9 @@ resource "azurerm_role_assignment" "log_analytics_contributor" {
   role_definition_name = "Log Analytics Contributor"
   principal_id         = azurerm_user_assigned_identity.main.principal_id
 }
+
+resource "azurerm_role_assignment" "storage_blob_data_logicapp" {
+  scope                = azurerm_storage_account.data.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_logic_app_workflow.this.identity[0].principal_id
+}
