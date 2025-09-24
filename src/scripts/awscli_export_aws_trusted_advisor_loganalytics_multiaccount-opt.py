@@ -8,7 +8,6 @@ import hashlib
 import base64
 import requests
 import time
-import math
 from datetime import datetime, timezone
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from botocore.exceptions import ClientError, EndpointConnectionError
@@ -21,25 +20,20 @@ AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 AZURE_WORKSPACE_KEY = os.getenv("AZURE_WORKSPACE_KEY")
 AZURE_LOG_TYPE = os.getenv("AZURE_LOG_TYPE", "Alert_CL")
 
-# role_name should be either a full ARN or a pattern depending how you use it.
-ROLE_ARN = os.getenv("IAM_ROLE")  # Keep same behavior as before (was role_name)
+ROLE_NAME = os.getenv("IAM_ROLE")  # solo il nome del ruolo
 
-# Performance tunables
-MAX_WORKERS = int(os.getenv("MAX_WORKERS", "6"))          # threads for accounts
-CHECK_WORKERS = int(os.getenv("CHECK_WORKERS", "4"))      # threads per account for fetching problematic checks (bounded)
-BATCH_SIZE = int(os.getenv("BATCH_SIZE", "500"))          # Azure batch size
-AWS_API_RETRIES = int(os.getenv("AWS_API_RETRIES", "3"))  # retries for AWS calls
-HTTP_TIMEOUT = int(os.getenv("HTTP_TIMEOUT", "30"))       # seconds for HTTP requests
+MAX_WORKERS = int(os.getenv("MAX_WORKERS", "6"))
+CHECK_WORKERS = int(os.getenv("CHECK_WORKERS", "4"))
+BATCH_SIZE = int(os.getenv("BATCH_SIZE", "500"))
+AWS_API_RETRIES = int(os.getenv("AWS_API_RETRIES", "3"))
+HTTP_TIMEOUT = int(os.getenv("HTTP_TIMEOUT", "30"))
 
-# Behavior
 OUTPUT_DETAIL_PER_RESOURCE = os.getenv("OUTPUT_DETAIL_PER_RESOURCE", "true").lower() in ("1","true","yes")
 
-# AWS STS client used to assume roles
 sts_client = boto3.client('sts')
 
 # === Helpers ===
 def retry(func, retries=3, initial_delay=1, backoff=2, exceptions=(Exception,)):
-    """Simple retry wrapper: call func() and retry on specified exceptions."""
     delay = initial_delay
     for attempt in range(1, retries + 1):
         try:
@@ -51,7 +45,7 @@ def retry(func, retries=3, initial_delay=1, backoff=2, exceptions=(Exception,)):
             time.sleep(delay)
             delay *= backoff
 
-# === Azure Signature / Post ===
+# === Azure Log Helpers ===
 def build_signature(workspace_id, key, date, content_length, method, content_type, resource):
     x_headers = f'x-ms-date:{date}'
     string_to_hash = f'{method}\n{content_length}\n{content_type}\n{x_headers}\n{resource}'
@@ -99,15 +93,19 @@ def post_in_batches(records, batch_size=BATCH_SIZE):
         batch = records[i:i+batch_size]
         post_to_log_analytics(AZURE_WORKSPACE_ID, AZURE_WORKSPACE_KEY, AZURE_LOG_TYPE, batch)
 
-# === Assume Role ===
-def assume_role(account_id, role_arn):
-    # If role_arn is a template or full ARN, adjust here. Original script expected role_name to be full ARN.
-    if not role_arn:
-        print("❌ IAM role ARN not provided in IAM_ROLE env.")
+# === Assume Role per account ===
+def assume_role(account_id, role_name):
+    if not role_name:
+        print("❌ IAM role name non fornito in IAM_ROLE")
         return None
 
+    role_arn = f"arn:aws:iam::{account_id}:role/{role_name}"
+
     def _assume():
-        return sts_client.assume_role(RoleArn=role_arn, RoleSessionName=f"TASession-{account_id}")
+        return sts_client.assume_role(
+            RoleArn=role_arn,
+            RoleSessionName=f"TASession-{account_id}"
+        )
 
     try:
         resp = retry(_assume, retries=AWS_API_RETRIES, initial_delay=1, backoff=2, exceptions=(ClientError, EndpointConnectionError))
@@ -122,7 +120,7 @@ def assume_role(account_id, role_arn):
         print(f"❌ Failed to assume role for {account_id}: {e}")
         return None
 
-# === Trusted Advisor helpers ===
+# === Trusted Advisor Helpers ===
 def get_trusted_advisor_checks(support_client):
     def _call():
         return support_client.describe_trusted_advisor_checks(language="en")
@@ -130,7 +128,6 @@ def get_trusted_advisor_checks(support_client):
     return resp.get("checks", [])
 
 def get_summaries_for_checks(support_client, check_ids):
-    # Batch by chunk size if necessary (API allows many, but be safe)
     CHUNK = 50
     summaries = []
     for i in range(0, len(check_ids), CHUNK):
@@ -147,7 +144,6 @@ def get_check_result(support_client, check_id):
     resp = retry(_call, retries=AWS_API_RETRIES, initial_delay=1, backoff=2, exceptions=(ClientError, EndpointConnectionError))
     return resp.get("result", {})
 
-# Mapping category cleanup
 CATEGORY_MAPPING = {
     "fault_tolerance": "HighAvailability",
     "security": "Security",
@@ -160,7 +156,7 @@ def collect_issues_for_account(session, account_id, account_name):
     support_client = session.client("support", region_name="us-east-1")
     iam_client = session.client("iam")
 
-    # account alias optionally fetch once
+    # alias account
     try:
         aliases = iam_client.list_account_aliases().get("AccountAliases", [])
         alias_name = aliases[0] if aliases else account_name
@@ -184,7 +180,6 @@ def collect_issues_for_account(session, account_id, account_name):
 
     issues = []
 
-    # Function to process a single check (we can parallelize limited)
     def _process_check(check_id):
         try:
             res = get_check_result(support_client, check_id)
@@ -192,16 +187,15 @@ def collect_issues_for_account(session, account_id, account_name):
             print(f"⚠️ Failed to get result for check {check_id} in {account_id}: {e}")
             return []
 
-        flagged = [
-            r for r in res.get("flaggedResources", [])
-            if r.get("status") in ("warning", "error")
-        ]
+        flagged = [r for r in res.get("flaggedResources", []) if r.get("status") in ("warning", "error")]
+        if not flagged:
+            return []
+
         check = check_id_map.get(check_id, {})
         check_name = check.get("name", "N/A")
         category = CATEGORY_MAPPING.get(check.get("category", "").lower(), check.get("category", "N/A"))
         description = check.get("description", "N/A")
 
-        # If the user wants a single row per check (with resource count)
         if not OUTPUT_DETAIL_PER_RESOURCE:
             severity = "high" if any(r.get("status") == "error" for r in flagged) else "medium"
             return [{
@@ -220,7 +214,6 @@ def collect_issues_for_account(session, account_id, account_name):
                 "date": timestamp
             }]
 
-        # Default behavior: one row per flagged resource (detailed)
         rows = []
         for r in flagged:
             rows.append({
@@ -229,7 +222,7 @@ def collect_issues_for_account(session, account_id, account_name):
                 "resource_id": r.get("arn") or r.get("resourceId") or "N/A",
                 "issue": check_name,
                 "recommendationId": check_id,
-                "severity": "high" if r.get("status") == "error" else "medium" if r.get("status") == "warning" else "low",
+                "severity": "high" if r.get("status") == "error" else "medium",
                 "description": description,
                 "source": "AWS_TrustedAdvisor",
                 "csp": "AWS",
@@ -239,7 +232,6 @@ def collect_issues_for_account(session, account_id, account_name):
             })
         return rows
 
-    # parallelize processing of problematic checks, but bounded
     results = []
     with ThreadPoolExecutor(max_workers=min(CHECK_WORKERS, max(1, len(problematic_check_ids)))) as executor:
         future_to_check = {executor.submit(_process_check, cid): cid for cid in problematic_check_ids}
@@ -254,9 +246,7 @@ def collect_issues_for_account(session, account_id, account_name):
 
     return results
 
-# === CSV writer ===
 def write_to_csv(rows, output_file):
-    # determine fieldnames dynamically (support optional 'affected_resources')
     base_fields = [
         "account_name", "account_id", "resource_id", "issue",
         "recommendationId", "severity", "description",
@@ -270,7 +260,6 @@ def write_to_csv(rows, output_file):
         writer.writeheader()
         writer.writerows(rows)
 
-# === Main ===
 def main():
     try:
         with open("src/scripts/account.json") as f:
@@ -286,7 +275,7 @@ def main():
         account_id = acc.get("id")
         print(f"🔍 Starting {account_name} ({account_id})")
 
-        session = assume_role(account_id, ROLE_ARN)
+        session = assume_role(account_id, ROLE_NAME)
         if not session:
             print(f"⚠️ Skipping {account_name} due to assume role failure")
             return []
@@ -299,7 +288,6 @@ def main():
             print(f"❌ Error processing account {account_name}: {e}")
             return []
 
-    # Parallelize accounts
     with ThreadPoolExecutor(max_workers=min(MAX_WORKERS, max(1, len(accounts)))) as executor:
         futures = {executor.submit(process_account_item, item): item for item in accounts.items()}
         for fut in as_completed(futures):
@@ -311,13 +299,10 @@ def main():
                 acct = futures[fut]
                 print(f"⚠️ Error in future for {acct}: {e}")
 
-    # Write CSV
     if all_issues:
         write_to_csv(all_issues, OUTPUT_FILE)
         print(f"✅ Exported {len(all_issues)} issues to {OUTPUT_FILE}")
-        # Post to Azure in batches
         if AZURE_WORKSPACE_ID and AZURE_WORKSPACE_KEY:
-            # If OUTPUT_DETAIL_PER_RESOURCE is False, our records are smaller, but still batch
             post_in_batches(all_issues, batch_size=BATCH_SIZE)
         else:
             print("⚠️ Azure credentials not set. Skipping upload.")

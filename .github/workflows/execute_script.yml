@@ -3,8 +3,8 @@ name: Run Dashboard Script for AWS and Azure
 env:
   AWS_REGION: eu-south-1
   #IAM_ROLE: arn:aws:iam::519902559805:role/GitHubActionIACRoleR
-  IAM_ROLE: arn:aws:iam::794703684555:role/test-role-dashboard-execute
-  IAM_ROLE_ROOT: arn:aws:iam::794703684555:role/test-role-dashboard
+  IAM_ROLE: DashboardGovRole
+  IAM_ROLE_ROOT: arn:aws:iam::155090677366:role/dashboard_gov_role
   AZ_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   AZ_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   AZ_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
