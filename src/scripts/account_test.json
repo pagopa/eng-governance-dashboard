@@ -1,0 +1,18 @@
+{
+  "sandbox": {
+    "email": "sandbox1@pagopa.it",
+    "id": "794703684555",
+    "name": "sandbox",
+    "project_path": "sandbox",
+    "service_line": "sandbox",
+    "signin_url": "https://794703684555.signin.aws.amazon.com/console"
+  },
+  "ppa-cloud-strategy-dev": {
+    "email": "ppa-cloud-strategy-dev@pagopa.it",
+    "id": "570790165558",
+    "name": "ppa-cloud-strategy-dev",
+    "project_path": "ppa-cloud-strategy-dev",
+    "service_line": "ppa-cloud-strategy-dev",
+    "signin_url": "https://570790165558.signin.aws.amazon.com/console"
+  }
+}
