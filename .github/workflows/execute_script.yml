@@ -52,17 +52,17 @@ jobs:
       - name: install-py-deps
         run: pip3 install --require-hashes --requirement src/scripts/requirements.txt
 
-      - name: Run Python script aws_dashboard_health multiaccount
-        run: python src/scripts/awscli_export_aws_dashboard_health_loganalytics_multiaccount.py
+      #- name: Run Python script aws_dashboard_health multiaccount
+      #  run: python src/scripts/awscli_export_aws_dashboard_health_loganalytics_multiaccount.py
 
       - name: Run Python script aws_trusted_advisor multiaccount
-        run: python src/scripts/awscli_export_aws_trusted_advisor_loganalytics_multiaccount.py
+        run: python src/scripts/awscli_export_aws_trusted_advisor_loganalytics_multiaccount-opt.py
 
-      - name: Run Python script azure_security_advisor
-        run: python src/scripts/azcli_export_azure_security_advisor_loganalytics.py
+      #- name: Run Python script azure_security_advisor
+      #  run: python src/scripts/azcli_export_azure_security_advisor_loganalytics.py
 
-      - name: Run Python script azure_security_policy
-        run: python src/scripts/azcli_export_azure_security_policy_loganalytics.py
+      #- name: Run Python script azure_security_policy
+      #  run: python src/scripts/azcli_export_azure_security_policy_loganalytics.py
 
       - name: Re-Login to Azure
         uses: azure/login@a65d910e8af852a8061c627c456678983e180302
@@ -78,24 +78,24 @@ jobs:
         run: |
           curl -X POST "${{ secrets.AZURE_LOGICAPP_TRIGGER }}"
 
-      - name: Notify Slack on Failure
-        if: failure()
-        uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d
-        with:
-          method: chat.postMessage
-          token: ${{ secrets.SLACK_BOT_TOKEN }}
-          payload: |
-            "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
-            "text": "GitHub Action failed.",
-            "attachments": [
-              {
-                "color": "danger",
-                "fields": [
-                  { "title": "Repository", "value": "${{ github.repository }}", "short": false },
-                  { "title": "Branch", "value": "${{ github.ref }}", "short": false },
-                  { "title": "Workflow Name", "value": "${{ github.workflow }}", "short": false },
-                  { "title": "Link", "value": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "short": false }
-                ]
-              }
-            ]
+      #- name: Notify Slack on Failure
+      #  if: failure()
+      # uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d
+      #  with:
+      #    method: chat.postMessage
+      #    token: ${{ secrets.SLACK_BOT_TOKEN }}
+      #    payload: |
+      #      "channel": "${{ secrets.SLACK_CHANNEL_ID }}",
+      #      "text": "GitHub Action failed.",
+      #      "attachments": [
+      #        {
+      #          "color": "danger",
+      #          "fields": [
+      #            { "title": "Repository", "value": "${{ github.repository }}", "short": false },
+      #            { "title": "Branch", "value": "${{ github.ref }}", "short": false },
+      #            { "title": "Workflow Name", "value": "${{ github.workflow }}", "short": false },
+      #            { "title": "Link", "value": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}", "short": false }
+      #          ]
+      #        }
+      #      ]
 
