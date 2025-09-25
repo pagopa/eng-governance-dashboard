@@ -15,7 +15,7 @@ timestamp = datetime.now().strftime('%Y-%m-%d')
 # Azure Log Analytics
 AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 AZURE_WORKSPACE_KEY = os.getenv("AZURE_WORKSPACE_KEY")
-AZURE_LOG_TYPE = "Dashboard_CL"
+AZURE_LOG_TYPE = "DashboardGov_CL"
 role_name = os.getenv("IAM_ROLE")
 sts_client = boto3.client('sts')
 
