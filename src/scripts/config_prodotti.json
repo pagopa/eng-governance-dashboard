@@ -1,0 +1,11 @@
+{
+  "PagoPA": [
+    "ppa-pagopa-prod",
+    "PROD-pagoPA",
+    "ppa-pagopa_product_website-prod"
+  ],
+  "OneIdentity": [
+    "ppa-oneidentity-prod",
+    "ppa-oneidentity-assertions"
+  ]
+}

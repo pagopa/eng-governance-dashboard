@@ -183,7 +183,13 @@ resource "azurerm_logic_app_action_custom" "parse_json" {
         "items" : {
           "type" : "object",
           "properties" : {
+            "account" : {
+              "type" : "string"
+            },
             "prodotto" : {
+              "type" : "string"
+            },
+            "provider" : {
               "type" : "string"
             },
             "data" : {
@@ -212,7 +218,9 @@ resource "azurerm_logic_app_action_custom" "parse_json" {
             }
           },
           "required" : [
+            "account",
             "prodotto",
+            "provider",
             "data",
             "issue_totali",
             "issue_high",
@@ -252,7 +260,9 @@ resource "azurerm_logic_app_action_custom" "for_each" {
           },
           method = "post",
           body = {
+            account              = "@item()['account']",
             prodotto             = "@item()['prodotto']",
+            provider             = "@item()['provider']",
             data                 = "@item()['data']",
             issue_totali         = "@int(item()['issue_totali'])",
             issue_high           = "@item()['issue_high']",
