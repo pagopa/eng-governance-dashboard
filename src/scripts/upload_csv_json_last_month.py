@@ -9,7 +9,7 @@ from azure.storage.blob import BlobServiceClient
 
 WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 TABLE_NAME = "DashboardGov_CL"
-DAYS = 30
+DAYS = 1
 PAGE_SIZE = 50000
 
 CONTAINER_NAME = "csv"
