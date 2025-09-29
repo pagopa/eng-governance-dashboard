@@ -7,16 +7,27 @@ from azure.identity import DefaultAzureCredential
 from azure.monitor.query import LogsQueryClient, LogsQueryStatus
 from azure.storage.blob import BlobServiceClient
 
-
 WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
-TABLE_NAME = "DashboardGov_CL"
-DAYS = 30
+TABLE_NAME = "DashboardGovernance_CL"
+DAYS = 1
 PAGE_SIZE = 50000
 
 CONTAINER_NAME = "csv"
 STORAGE_ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
 
-# Client Azure
+# Load product->accounts mapping from JSON config file
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, "config_prodotti.json")
+with open(config_path, "r", encoding="utf-8") as f:
+    prodotti_config = json.load(f)
+
+# Invert mapping to get account -> product
+account_to_prodotto = {}
+for prodotto, accounts in prodotti_config.items():
+    for acc in accounts:
+        account_to_prodotto[acc] = prodotto
+
+# Azure client setup
 credential = DefaultAzureCredential()
 account_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
 client = LogsQueryClient(credential)
@@ -59,23 +70,24 @@ while True:
     if len(rows) < PAGE_SIZE:
         break
 
-
-output_file = f"log_analytics_last{DAYS}days.csv"
+# Output detailed CSV
+output_file = f"log_analytics_last30days.csv"
 with open(output_file, "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
     writer.writerow(columns)
     writer.writerows(all_rows)
 
-print(f"✅ File CSV saved: {output_file} ({len(all_rows)} rows)")
+print(f"✅ CSV file saved: {output_file} ({len(all_rows)} rows)")
 
-# Index
+# Get column index
 idx_account_s = columns.index("account_id_s") if "account_id_s" in columns else None
 idx_account_g = columns.index("account_id_g") if "account_id_g" in columns else None
 idx_time = columns.index("TimeGenerated")
 idx_severity = columns.index("severity_s")
 idx_account_name_s = columns.index("account_name_s")
+idx_csp = columns.index("csp_s") if "csp_s" in columns else None
 
-# Count monthly
+# Summarize data by account and CSP
 now = datetime.now(timezone.utc)
 summary = defaultdict(lambda: {
     "total": 0,
@@ -97,66 +109,72 @@ for row in all_rows:
     else:
         continue
 
+    csp = row[idx_csp] if idx_csp is not None else "n/a"
     time = row[idx_time]
     severity = row[idx_severity].lower() if row[idx_severity] else ""
 
-    summary[account]["total"] += 1
+    key = (account, csp)
+    summary[key]["total"] += 1
     if severity == "high":
-        summary[account]["high"] += 1
+        summary[key]["high"] += 1
     elif severity == "medium":
-        summary[account]["medium"] += 1
+        summary[key]["medium"] += 1
     elif severity == "low":
-        summary[account]["low"] += 1
+        summary[key]["low"] += 1
 
     month_key = time.strftime("%Y-%m")
-    monthly_counts[account][month_key] += 1
+    monthly_counts[key][month_key] += 1
 
 def percent_change(current, previous):
     if previous == 0:
         return 100.0 if current > 0 else 0.0
     return round(((current - previous) / previous) * 100, 2)
 
-for account in summary:
+for key in summary:
     current_month = now.strftime("%Y-%m")
     previous_month = (now - timedelta(days=30)).strftime("%Y-%m")
     last_12_months = [(now - timedelta(days=30 * i)).strftime("%Y-%m") for i in range(1, 13)]
 
-    current_count = monthly_counts[account][current_month]
-    previous_count = monthly_counts[account][previous_month]
-    last_12_total = sum(monthly_counts[account][m] for m in last_12_months)
+    current_count = monthly_counts[key][current_month]
+    previous_count = monthly_counts[key][previous_month]
+    last_12_total = sum(monthly_counts[key][m] for m in last_12_months)
     last_12_avg = last_12_total / 12 if last_12_total > 0 else 0
 
-    summary[account]["change_last_1m"] = percent_change(current_count, previous_count)
-    summary[account]["change_last_12m"] = percent_change(current_count, last_12_avg)
+    summary[key]["change_last_1m"] = percent_change(current_count, previous_count)
+    summary[key]["change_last_12m"] = percent_change(current_count, last_12_avg)
 
-
-# Save JSON
+# Save JSON summary
 with open("sintesi_last30days.json", "w", encoding="utf-8") as f:
     json.dump([
         {
-            "prodotto": account,
-            "data": now.strftime("%d/%m/%Y"),
-            "issue_totali": stats["total"],
-            "issue_high": stats["high"],
-            "issue_medium": stats["medium"],
-            "issue_low": stats["low"],
-            "issue_dismissed": stats["dismissed"],
+            "account": account,
+            "product": account_to_prodotto.get(account, ""),
+            "provider": csp,
+            "date": now.strftime("%d/%m/%Y"),
+            "total_issues": stats["total"],
+            "high_issues": stats["high"],
+            "medium_issues": stats["medium"],
+            "low_issues": stats["low"],
+            "dismissed_issues": stats["dismissed"],
             "change_last_12_month": stats["change_last_12m"],
             "change_last_month": stats["change_last_1m"]
         }
-        for account, stats in summary.items()
+        for (account, csp), stats in summary.items()
     ], f, ensure_ascii=False, indent=4)
 
-# Save CSV
+# Save CSV summary
 with open("sintesi_last30days.csv", "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
     writer.writerow([
-        "prodotto", "data", "issue_totali", "issue_high", "issue_medium",
-        "issue_low", "issue_dismissed", "change_last_12_month", "change_last_month"
+        "account", "product", "provider", "date", "total_issues", "high_issues", "medium_issues",
+        "low_issues", "dismissed_issues", "change_last_12_month", "change_last_month"
     ])
-    for account, stats in summary.items():
+    for (account, csp), stats in summary.items():
+        prodotto = account_to_prodotto.get(account, "")
         writer.writerow([
             account,
+            prodotto,
+            csp,
             now.strftime("%d/%m/%Y"),
             stats["total"],
             stats["high"],
@@ -167,8 +185,9 @@ with open("sintesi_last30days.csv", "w", newline="", encoding="utf-8") as f:
             stats["change_last_1m"]
         ])
 
-print("✅ Script completed. File sintesi_last30days.csv and sintesi_last30days.json updated.")
+print("✅ Script completed. Files sintesi_last30days.csv and sintesi_last30days.json updated.")
 
+# Upload to Azure Blob Storage
 blob_service_client = BlobServiceClient(account_url=account_url, credential=credential)
 container_client = blob_service_client.get_container_client(CONTAINER_NAME)
 
@@ -177,6 +196,6 @@ def upload_file(local_file_path, remote_file_name):
         container_client.upload_blob(name=remote_file_name, data=data, overwrite=True)
     print(f"✅ Upload completed: {remote_file_name}")
 
-upload_file("log_analytics_last30days.csv", "log_analytics_last30days.csv")
+upload_file(f"log_analytics_last30days.csv", f"log_analytics_last30days.csv")
 upload_file("sintesi_last30days.csv", "sintesi_last30days.csv")
 upload_file("sintesi_last30days.json", "sintesi_last30days.json")
