@@ -196,6 +196,6 @@ def upload_file(local_file_path, remote_file_name):
         container_client.upload_blob(name=remote_file_name, data=data, overwrite=True)
     print(f"✅ Upload completed: {remote_file_name}")
 
-upload_file(f"log_analytics_last{DAYS}days.csv", f"log_analytics_last{DAYS}days.csv")
+upload_file(f"log_analytics_last30days.csv", f"log_analytics_last30days.csv")
 upload_file("sintesi_last30days.csv", "sintesi_last30days.csv")
 upload_file("sintesi_last30days.json", "sintesi_last30days.json")
