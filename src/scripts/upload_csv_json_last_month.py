@@ -8,7 +8,7 @@ from azure.monitor.query import LogsQueryClient, LogsQueryStatus
 from azure.storage.blob import BlobServiceClient
 
 WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
-TABLE_NAME = "DashboardGov_CL"
+TABLE_NAME = "DashboardGovernance_CL"
 DAYS = 1
 PAGE_SIZE = 50000
 
@@ -71,7 +71,7 @@ while True:
         break
 
 # Output detailed CSV
-output_file = f"log_analytics_last{DAYS}days.csv"
+output_file = f"log_analytics_last30days.csv"
 with open(output_file, "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
     writer.writerow(columns)
