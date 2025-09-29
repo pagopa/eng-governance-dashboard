@@ -20,7 +20,7 @@ AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 AZURE_WORKSPACE_KEY = os.getenv("AZURE_WORKSPACE_KEY")
 AZURE_LOG_TYPE = os.getenv("AZURE_LOG_TYPE", "DashboardGov_CL")
 
-ROLE_NAME = os.getenv("IAM_ROLE")  # solo il nome del ruolo
+ROLE_NAME = os.getenv("IAM_ROLE")
 
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", "6"))
 CHECK_WORKERS = int(os.getenv("CHECK_WORKERS", "4"))
