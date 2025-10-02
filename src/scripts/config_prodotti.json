@@ -82,7 +82,7 @@
   "b2b-portals": [
     "b2b-portals-prod"
   ],
-  "unknown": [
+  "cnf-portal": [
     "cnf-portal"
   ],
   "datastrategy": [
