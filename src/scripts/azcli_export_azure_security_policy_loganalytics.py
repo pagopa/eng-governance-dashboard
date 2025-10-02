@@ -28,7 +28,7 @@ if not workspace_id or not primary_key:
     print("Error: var AZURE_WORKSPACE_ID and AZURE_WORKSPACE_KEY not found")
     sys.exit(1)
 
-log_type = "DashboardGovernance_CL"
+log_type = "DashGov_CL"
 
 # ===== Functions =====
 def check_dependency(command):

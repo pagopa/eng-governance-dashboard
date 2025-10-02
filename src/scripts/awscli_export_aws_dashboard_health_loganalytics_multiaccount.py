@@ -17,7 +17,7 @@ now = datetime.now(timezone.utc)
 # Azure Log Analytics
 AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 AZURE_WORKSPACE_KEY = os.getenv("AZURE_WORKSPACE_KEY")
-AZURE_LOG_TYPE = "DashboardGovernance_CL"
+AZURE_LOG_TYPE = "DashGov_CL"
 
 # AWS Clients
 role_name = os.getenv("IAM_ROLE")

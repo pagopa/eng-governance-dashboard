@@ -8,7 +8,7 @@ from azure.monitor.query import LogsQueryClient, LogsQueryStatus
 from azure.storage.blob import BlobServiceClient
 
 WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
-TABLE_NAME = "DashboardGovernance_CL"
+TABLE_NAME = "DashGov_CL"
 DELTA_TIME = 2  # in hours
 PAGE_SIZE = 50000
 

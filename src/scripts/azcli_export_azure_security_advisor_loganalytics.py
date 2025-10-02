@@ -18,7 +18,7 @@ if not workspace_id or not primary_key:
     print("Errore: variabili d'ambiente AZURE_WORKSPACE_ID e AZURE_WORKSPACE_KEY devono essere settate.")
     sys.exit(1)
 
-log_type = "DashboardGovernance_CL"
+log_type = "DashGov_CL"
 
 # ===== Utility: Signature builder =====
 def build_signature(customer_id, shared_key, date, content_length, method, content_type, resource):
