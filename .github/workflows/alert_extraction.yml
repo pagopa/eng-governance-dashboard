@@ -51,8 +51,8 @@ jobs:
       - name: install-py-deps
         run: pip3 install --require-hashes --requirement src/scripts/requirements.txt
 
-      - name: Run Python script aws_dashboard_health multiaccount
-        run: python src/scripts/awscli_export_aws_dashboard_health_loganalytics_multiaccount.py
+      #- name: Run Python script aws_dashboard_health multiaccount
+      #  run: python src/scripts/awscli_export_aws_dashboard_health_loganalytics_multiaccount.py
 
       - name: Run Python script aws_trusted_advisor multiaccount
         run: python src/scripts/awscli_export_aws_trusted_advisor_loganalytics_multiaccount.py
