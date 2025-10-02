@@ -9,7 +9,7 @@ from azure.storage.blob import BlobServiceClient
 
 WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 TABLE_NAME = "DashboardGovernance_CL"
-DAYS = 1
+DELTA_TIME = 2     # in hours
 PAGE_SIZE = 50000
 
 CONTAINER_NAME = "csv"
@@ -33,7 +33,7 @@ account_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
 client = LogsQueryClient(credential)
 
 end_time = datetime.now(timezone.utc)
-start_time = end_time - timedelta(days=DAYS)
+start_time = end_time - timedelta(hours=DELTA_TIME)
 
 all_rows = []
 columns = None

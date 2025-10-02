@@ -1,11 +1,110 @@
 {
-  "PagoPA": [
-    "ppa-pagopa-prod",
+  "pagoPA": [
     "PROD-pagoPA",
+    "Common",
+    "PDA-Migration-PostgreSQL",
+    "PROD-PDA-BACKUP",
+    "ppa-pagopa-prod",
     "ppa-pagopa_product_website-prod"
   ],
-  "OneIdentity": [
+  "IO": [
+    "PROD-IO",
+    "firmaconio-prod"
+  ],
+  "Security": [
+    "Prod-Sec"
+  ],
+  "PARI": [
+    "PROD-CSTAR",
+    "cstar-prod"
+  ],
+  "SelfCare": [
+    "PROD-SelfCare",
+    "selfcare-prod"
+  ],
+  "PCI": [
+    "PROD-PCI",
+    "ORG-PCI",
+    "SEC-PCI"
+  ],
+  "Technology": [
+    "ORG",
+    "DevOpsAutomation",
+    "PROD-SITECORP",
+    "Management",
+    "ppa-assistenza-prod",
+    "ppa-eng-ca-prod",
+    "ppa-eng-ccdn-prod",
+    "ppa-eng-gha-prod",
+    "ppa-eng-is-prod",
+    "ppa-git-watchdog",
+    "ppa-oneidentity-assertions",
     "ppa-oneidentity-prod",
-    "ppa-oneidentity-assertions"
+    "ppa-personal-data-vault-prod",
+    "ppa-tokenizer-data-vault-prod"
+  ],
+  "Carta Giovani": [
+    "PROD-Esercenti"
+  ],
+  "Fatturazione": [
+    "PROD-FATTURAZIONE"
+  ],
+  "Piattaforma Unifaria": [
+    "PROD-ARC",
+    "PROD-P4PA"
+  ],
+  "ICT": [
+    "PROD-ICT"
+  ],
+  "DevEx": [
+    "PROD-DEVEX"
+  ],
+  "GRC": [
+    "PROD-GRC"
+  ],
+  "CRM": [
+    "PROD-CRM"
+  ],
+  "Monitoraggio Pagamenti": [
+    "PROD-PAY-MONITORING"
+  ],
+  "Platform Service Management": [
+    "PROD-PLATFORM-SM"
+  ],
+  "Software Version Control": [
+    "GitHub"
+  ],
+  "datalake": [
+    "Pdnd Datalake",
+    "pdnd-datalake-ai-send-prod",
+    "pdnd-datalake-dtd-prod"
+  ],
+  "b2b-portals": [
+    "b2b-portals-prod"
+  ],
+  "cnf-portal": [
+    "cnf-portal"
+  ],
+  "datastrategy": [
+    "data-strategy-prod"
+  ],
+  "devportal": [
+    "devportal-prod"
+  ],
+  "interop": [
+    "interop-extra-prod",
+    "interop-probing-prod",
+    "interop-safe-storage-prod",
+    "interop-signalhub-prod",
+    "pdnd-interop-prod"
+  ],
+  "pn": [
+    "pn-analytics",
+    "pn-confinfo-prod",
+    "pn-core-prod",
+    "ppa-piattaforma-notifiche-cicd"
+  ],
+  "corporate": [
+    "ppa-corporate-site-prod"
   ]
 }
