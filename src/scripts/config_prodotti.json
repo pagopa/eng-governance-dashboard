@@ -56,7 +56,7 @@
   "ICT": [
     "PROD-ICT"
   ],
-  "DevEx": [
+  "DEVEX": [
     "PROD-DEVEX"
   ],
   "GRC": [
@@ -65,7 +65,7 @@
   "CRM": [
     "PROD-CRM"
   ],
-  "Monitoraggio Pagamenti": [
+  "Payment Monitoring": [
     "PROD-PAY-MONITORING"
   ],
   "Platform Service Management": [
@@ -74,37 +74,35 @@
   "Software Version Control": [
     "GitHub"
   ],
-  "datalake": [
+  "Datalake": [
     "Pdnd Datalake",
     "pdnd-datalake-ai-send-prod",
     "pdnd-datalake-dtd-prod"
   ],
-  "b2b-portals": [
-    "b2b-portals-prod"
+  "Portals & Tools": [
+    "b2b-portals-prod",
+    "devportal-prod"
   ],
   "cnf-portal": [
     "cnf-portal"
   ],
-  "datastrategy": [
+  "Data Strategy": [
     "data-strategy-prod"
   ],
-  "devportal": [
-    "devportal-prod"
-  ],
-  "interop": [
+  "Interop": [
     "interop-extra-prod",
     "interop-probing-prod",
     "interop-safe-storage-prod",
     "interop-signalhub-prod",
     "pdnd-interop-prod"
   ],
-  "pn": [
+  "SEND": [
     "pn-analytics",
     "pn-confinfo-prod",
     "pn-core-prod",
     "ppa-piattaforma-notifiche-cicd"
   ],
-  "corporate": [
+  "Sito Istituzionale": [
     "ppa-corporate-site-prod"
   ]
 }

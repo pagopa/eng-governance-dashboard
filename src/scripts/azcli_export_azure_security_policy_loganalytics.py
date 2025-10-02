@@ -124,7 +124,7 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
         sub_id = sub.get("id", "")
         sub_name = sub.get("name", "")
 
-        print(f"==> Subscription: {sub_name} ({sub_id})")
+        print(f"==> Subscription: {sub_name}")
         run_az_command(["az", "account", "set", "--subscription", sub_id])
 
         cmd = [
