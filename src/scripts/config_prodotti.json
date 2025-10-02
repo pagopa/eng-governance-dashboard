@@ -16,7 +16,6 @@
   ],
   "PARI": [
     "PROD-CSTAR",
-    "PROD-mil",
     "cstar-prod"
   ],
   "SelfCare": [
@@ -32,8 +31,6 @@
     "ORG",
     "DevOpsAutomation",
     "PROD-SITECORP",
-    "Microsoft Azure Enterprise",
-    "PROD-PSN",
     "Management",
     "ppa-assistenza-prod",
     "ppa-eng-ca-prod",
@@ -68,9 +65,6 @@
   "CRM": [
     "PROD-CRM"
   ],
-  "Assistenza": [
-    "DEV-Assistenza"
-  ],
   "Monitoraggio Pagamenti": [
     "PROD-PAY-MONITORING"
   ],
@@ -102,7 +96,6 @@
     "interop-probing-prod",
     "interop-safe-storage-prod",
     "interop-signalhub-prod",
-    "pdnd-interop-attestazione",
     "pdnd-interop-prod"
   ],
   "pn": [
