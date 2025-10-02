@@ -198,6 +198,7 @@ def collect_issues_for_account(session, account_id, account_name):
 
         if not OUTPUT_DETAIL_PER_RESOURCE:
             severity = "high" if any(r.get("status") == "error" for r in flagged) else "medium"
+            dismissed = "yes" if any(r.get("isSuppressed") for r in flagged) else "no"
             return [{
                 "account_name": alias_name,
                 "account_id": str(account_id),
@@ -211,11 +212,13 @@ def collect_issues_for_account(session, account_id, account_name):
                 "region": "N/A",
                 "category": category,
                 "affected_resources": len(flagged),
-                "date": timestamp
+                "date": timestamp,
+                "dismissed": dismissed
             }]
 
         rows = []
         for r in flagged:
+            dismissed = "yes" if r.get("isSuppressed") else "no"   ### NEW
             rows.append({
                 "account_name": alias_name,
                 "account_id": str(account_id),
@@ -228,7 +231,8 @@ def collect_issues_for_account(session, account_id, account_name):
                 "csp": "AWS",
                 "region": r.get("region", "N/A"),
                 "category": category,
-                "date": timestamp
+                "date": timestamp,
+                "dismissed": dismissed 
             })
         return rows
 
@@ -250,7 +254,7 @@ def write_to_csv(rows, output_file):
     base_fields = [
         "account_name", "account_id", "resource_id", "issue",
         "recommendationId", "severity", "description",
-        "source", "csp", "region", "category", "date"
+        "source", "csp", "region", "category", "date", "dismissed"
     ]
     if not OUTPUT_DETAIL_PER_RESOURCE:
         base_fields.append("affected_resources")

@@ -9,7 +9,7 @@ from azure.storage.blob import BlobServiceClient
 
 WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 TABLE_NAME = "DashboardGovernance_CL"
-DELTA_TIME = 2     # in hours
+DELTA_TIME = 2  # in hours
 PAGE_SIZE = 50000
 
 CONTAINER_NAME = "csv"
@@ -86,6 +86,7 @@ idx_time = columns.index("TimeGenerated")
 idx_severity = columns.index("severity_s")
 idx_account_name_s = columns.index("account_name_s")
 idx_csp = columns.index("csp_s") if "csp_s" in columns else None
+idx_dismissed = columns.index("dismissed_s") if "dismissed_s" in columns else None
 
 # Summarize data by account and CSP
 now = datetime.now(timezone.utc)
@@ -112,6 +113,7 @@ for row in all_rows:
     csp = row[idx_csp] if idx_csp is not None else "n/a"
     time = row[idx_time]
     severity = row[idx_severity].lower() if row[idx_severity] else ""
+    dismissed_value = row[idx_dismissed].lower() if idx_dismissed is not None else "no"
 
     key = (account, csp)
     summary[key]["total"] += 1
@@ -122,6 +124,9 @@ for row in all_rows:
     elif severity == "low":
         summary[key]["low"] += 1
 
+    if dismissed_value == "yes":
+        summary[key]["dismissed"] += 1
+
     month_key = time.strftime("%Y-%m")
     monthly_counts[key][month_key] += 1
 
@@ -130,6 +135,7 @@ def percent_change(current, previous):
         return 100.0 if current > 0 else 0.0
     return round(((current - previous) / previous) * 100, 2)
 
+now = datetime.now(timezone.utc)
 for key in summary:
     current_month = now.strftime("%Y-%m")
     previous_month = (now - timedelta(days=30)).strftime("%Y-%m")

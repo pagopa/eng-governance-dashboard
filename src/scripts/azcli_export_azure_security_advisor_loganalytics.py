@@ -96,7 +96,8 @@ header = [
     "csp",
     "region",
     "category",
-    "date"
+    "date",
+    "dismissed"
 ]
 
 data_rows = []
@@ -158,7 +159,8 @@ with open(outfile, mode='w', newline='', encoding='utf-8') as f:
                 region = "N/A"
             else:
                 region = "N/A"
-            
+
+            dismissed = "yes" if rec.get("suppressionIds") else "no"            
 
             row = [
                 sub_name,
@@ -172,7 +174,8 @@ with open(outfile, mode='w', newline='', encoding='utf-8') as f:
                 csp,
                 region,
                 category,
-                date
+                date,
+                dismissed
             ]
             writer.writerow(row)
 
@@ -188,7 +191,8 @@ with open(outfile, mode='w', newline='', encoding='utf-8') as f:
                 "csp": csp,
                 "region": region,
                 "category": category,
-                "date": date
+                "date": date,
+                "dismissed": dismissed
             })
             total += 1
 
