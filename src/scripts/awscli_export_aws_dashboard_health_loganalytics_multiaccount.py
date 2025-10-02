@@ -207,7 +207,7 @@ if __name__ == '__main__':
             except Exception:
                 account_name_alias = account_name
 
-            print(f"🔍 Fetching events for account {assumed_account_id} ({account_name_alias})...")
+            print(f"🔍 Fetching events for account ({account_name_alias})...")
             events = get_health_events(health_client)
             findings = collect_health_issues(events, health_client, assumed_account_id, account_name_alias)
             all_findings.extend(findings)

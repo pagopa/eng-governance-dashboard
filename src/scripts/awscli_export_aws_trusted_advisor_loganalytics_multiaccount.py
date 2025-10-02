@@ -273,7 +273,7 @@ def main():
     def process_account_item(item):
         account_name, acc = item
         account_id = acc.get("id")
-        print(f"🔍 Starting {account_name} ({account_id})")
+        print(f"🔍 Starting {account_name}")
 
         session = assume_role(account_id, ROLE_NAME)
         if not session:
