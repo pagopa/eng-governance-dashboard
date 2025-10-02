@@ -198,7 +198,7 @@ def collect_issues_for_account(session, account_id, account_name):
 
         if not OUTPUT_DETAIL_PER_RESOURCE:
             severity = "high" if any(r.get("status") == "error" for r in flagged) else "medium"
-            dismissed = "yes" if any(r.get("isSuppressed") for r in flagged) else "no"
+            dismissed = "yes" if any(r.get("isSuppressed", False) for r in flagged) else "no"
             return [{
                 "account_name": alias_name,
                 "account_id": str(account_id),
@@ -218,7 +218,7 @@ def collect_issues_for_account(session, account_id, account_name):
 
         rows = []
         for r in flagged:
-            dismissed = "yes" if r.get("isSuppressed") else "no"   ### NEW
+            dismissed = "yes" if r.get("isSuppressed", False) else "no"
             rows.append({
                 "account_name": alias_name,
                 "account_id": str(account_id),
