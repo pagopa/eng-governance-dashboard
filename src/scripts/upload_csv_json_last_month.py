@@ -117,15 +117,28 @@ for row in all_rows:
 
     key = (account, csp)
     summary[key]["total"] += 1
-    if severity == "high":
-        summary[key]["high"] += 1
-    elif severity == "medium":
-        summary[key]["medium"] += 1
-    elif severity == "low":
-        summary[key]["low"] += 1
 
+    #### Issue Dismissed conteggiate anche in Issue High, Medium e Low ####
+    #if severity == "high":
+    #    summary[key]["high"] += 1
+    #elif severity == "medium":
+    #    summary[key]["medium"] += 1
+    #elif severity == "low":
+    #    summary[key]["low"] += 1
+
+    #if dismissed_value == "yes":
+    #    summary[key]["dismissed"] += 1
+    
+    #### Issue Dismissed conteggiate solo in Total ma non in Issue High, Medium e Low ####
     if dismissed_value == "yes":
         summary[key]["dismissed"] += 1
+    else:
+        if severity == "high":
+            summary[key]["high"] += 1
+        elif severity == "medium":
+            summary[key]["medium"] += 1
+        elif severity == "low":
+            summary[key]["low"] += 1
 
     month_key = time.strftime("%Y-%m")
     monthly_counts[key][month_key] += 1
