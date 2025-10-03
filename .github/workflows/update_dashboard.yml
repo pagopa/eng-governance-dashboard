@@ -11,7 +11,7 @@ env:
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 7 1 * *'
+    - cron: '0 7 * * *'
 
 permissions:
   id-token: write
