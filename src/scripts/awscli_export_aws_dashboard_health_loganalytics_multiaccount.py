@@ -17,7 +17,7 @@ now = datetime.now(timezone.utc)
 # Azure Log Analytics
 AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 AZURE_WORKSPACE_KEY = os.getenv("AZURE_WORKSPACE_KEY")
-AZURE_LOG_TYPE = "DashboardGovernance_CL"
+AZURE_LOG_TYPE = "DashGov_CL"
 
 # AWS Clients
 role_name = os.getenv("IAM_ROLE")
@@ -158,6 +158,7 @@ def collect_health_issues(events, health_client, account_id, account_name):
         else:
             severity = 'low'
 
+        dismissed = "no"
         findings.append({
             'account_name': account_name,
             'account_id': account_id,
@@ -170,7 +171,8 @@ def collect_health_issues(events, health_client, account_id, account_name):
             'csp': 'AWS',
             'region': event.get('region', 'N/A'),
             'category': "Service Retirement",
-            'date': timestamp
+            'date': timestamp,
+            'dismissed': dismissed
         })
     return findings
 
@@ -178,7 +180,7 @@ def collect_health_issues(events, health_client, account_id, account_name):
 # === Export to CSV ===
 def write_to_csv(rows, output_file):
     fieldnames = ['account_name', 'account_id', 'resource_id', 'issue',
-                  'recommendationId', 'severity', 'description', 'source', 'csp', 'region', 'category', 'date']
+                  'recommendationId', 'severity', 'description', 'source', 'csp', 'region', 'category', 'date', 'dismissed']
 
     with open(output_file, mode='w', newline='') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)

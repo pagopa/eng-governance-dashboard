@@ -28,7 +28,7 @@ if not workspace_id or not primary_key:
     print("Error: var AZURE_WORKSPACE_ID and AZURE_WORKSPACE_KEY not found")
     sys.exit(1)
 
-log_type = "DashboardGovernance_CL"
+log_type = "DashGov_CL"
 
 # ===== Functions =====
 def check_dependency(command):
@@ -94,7 +94,8 @@ header = [
     "csp",
     "region",
     "category",
-    "date"
+    "date",
+    "dismissed"
 ]
 
 rows_to_send = []
@@ -165,7 +166,8 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
                 "Azure",
                 entry.get("resourceLocation", "").replace("\n", " ").replace('"', '""'),
                 "Policy",
-                execution_time
+                execution_time,
+                "no"
             ]
             writer.writerow(row)
             total += 1
@@ -182,7 +184,8 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
                 "csp": "Azure",
                 "region": entry.get("resourceLocation", "").replace("\n", " ").replace('"', '""'),
                 "category": "Policy",
-                "date": execution_time
+                "date": execution_time,
+                "dismissed": "no"
             }
             rows_to_send.append(record)
 
