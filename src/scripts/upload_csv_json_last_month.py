@@ -116,23 +116,11 @@ for row in all_rows:
     dismissed_value = row[idx_dismissed].lower() if idx_dismissed is not None else "no"
 
     key = (account, csp)
-    summary[key]["total"] += 1
 
-    #### Issue Dismissed conteggiate anche in Issue High, Medium e Low ####
-    #if severity == "high":
-    #    summary[key]["high"] += 1
-    #elif severity == "medium":
-    #    summary[key]["medium"] += 1
-    #elif severity == "low":
-    #    summary[key]["low"] += 1
-
-    #if dismissed_value == "yes":
-    #    summary[key]["dismissed"] += 1
-    
-    #### Issue Dismissed conteggiate solo in Total ma non in Issue High, Medium e Low ####
     if dismissed_value == "yes":
         summary[key]["dismissed"] += 1
     else:
+        summary[key]["total"] += 1
         if severity == "high":
             summary[key]["high"] += 1
         elif severity == "medium":
@@ -140,8 +128,8 @@ for row in all_rows:
         elif severity == "low":
             summary[key]["low"] += 1
 
-    month_key = time.strftime("%Y-%m")
-    monthly_counts[key][month_key] += 1
+        month_key = time.strftime("%Y-%m")
+        monthly_counts[key][month_key] += 1
 
 def percent_change(current, previous):
     if previous == 0:
