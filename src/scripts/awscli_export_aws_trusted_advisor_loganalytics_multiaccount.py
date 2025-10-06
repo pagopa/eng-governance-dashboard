@@ -32,6 +32,18 @@ OUTPUT_DETAIL_PER_RESOURCE = os.getenv("OUTPUT_DETAIL_PER_RESOURCE", "true").low
 
 sts_client = boto3.client('sts')
 
+# === Load products config ===
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, "config_prodotti.json")
+with open(config_path, "r", encoding="utf-8") as f:
+    prodotti_config = json.load(f)
+
+# Invert mapping product -> accounts → account -> product
+account_to_prodotto = {}
+for prodotto, accounts in prodotti_config.items():
+    for acc in accounts:
+        account_to_prodotto[acc] = prodotto
+
 # === Helpers ===
 def retry(func, retries=3, initial_delay=1, backoff=2, exceptions=(Exception,)):
     delay = initial_delay
@@ -195,6 +207,7 @@ def collect_issues_for_account(session, account_id, account_name):
         check_name = check.get("name", "N/A")
         category = CATEGORY_MAPPING.get(check.get("category", "").lower(), check.get("category", "N/A"))
         description = check.get("description", "N/A")
+        product = account_to_prodotto.get(account_name, "")  # 🔑 aggiunto mapping
 
         if not OUTPUT_DETAIL_PER_RESOURCE:
             severity = "high" if any(r.get("status") == "error" for r in flagged) else "medium"
@@ -202,6 +215,7 @@ def collect_issues_for_account(session, account_id, account_name):
             return [{
                 "account_name": alias_name,
                 "account_id": str(account_id),
+                "product": product,
                 "resource_id": "N/A",
                 "issue": check_name,
                 "recommendationId": check_id,
@@ -222,6 +236,7 @@ def collect_issues_for_account(session, account_id, account_name):
             rows.append({
                 "account_name": alias_name,
                 "account_id": str(account_id),
+                "product": product,
                 "resource_id": r.get("arn") or r.get("resourceId") or "N/A",
                 "issue": check_name,
                 "recommendationId": check_id,
@@ -252,14 +267,14 @@ def collect_issues_for_account(session, account_id, account_name):
 
 def write_to_csv(rows, output_file):
     base_fields = [
-        "account_name", "account_id", "resource_id", "issue",
+        "account_name", "account_id", "product", "resource_id", "issue",
         "recommendationId", "severity", "description",
         "source", "csp", "region", "category", "date", "dismissed"
     ]
     if not OUTPUT_DETAIL_PER_RESOURCE:
         base_fields.append("affected_resources")
 
-    with open(output_file, mode="w", newline="") as csvfile:
+    with open(output_file, mode="w", newline="", encoding="utf-8") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=base_fields)
         writer.writeheader()
         writer.writerows(rows)
