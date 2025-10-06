@@ -79,6 +79,22 @@ def check_dependency(command):
 
 check_dependency("az")
 
+# ===== Load product mapping =====
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, "config_prodotti.json")
+
+try:
+    with open(config_path, "r", encoding="utf-8") as f:
+        prodotti_config = json.load(f)
+except Exception as e:
+    print(f"Errore nel caricamento di config_prodotti.json: {e}")
+    prodotti_config = {}
+
+account_to_prodotto = {}
+for prodotto, accounts in prodotti_config.items():
+    for acc in accounts:
+        account_to_prodotto[acc] = prodotto
+
 # ===== Config =====
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 outfile = f"azure_advisor_recommendations_{timestamp}.csv"
@@ -87,6 +103,7 @@ outfile = f"azure_advisor_recommendations_{timestamp}.csv"
 header = [
     "account_name",
     "account_id",
+    "product",
     "resource_id",
     "issue",
     "recommendationId",
@@ -127,6 +144,7 @@ with open(outfile, mode='w', newline='', encoding='utf-8') as f:
     for sub in subs_data:
         sub_id = sub.get("id", "")
         sub_name = sub.get("name", "")
+        product = account_to_prodotto.get(sub_name) or account_to_prodotto.get(sub_id, "")
 
         print(f"==> Subscription: {sub_name}")
         subprocess.run(["az", "account", "set", "--subscription", sub_id], check=True)
@@ -165,6 +183,7 @@ with open(outfile, mode='w', newline='', encoding='utf-8') as f:
             row = [
                 sub_name,
                 sub_id,
+                product,
                 resource_id,
                 issue,
                 name,
@@ -182,6 +201,7 @@ with open(outfile, mode='w', newline='', encoding='utf-8') as f:
             data_rows.append({
                 "account_name": sub_name,
                 "account_id": sub_id,
+                "product": product,
                 "resource_id": resource_id,
                 "issue": issue,
                 "recommendationId": name,
@@ -207,6 +227,3 @@ else:
     print("No data to send to Log Analytics.")
 
 print(f"CSV file generated: {outfile}")
-
-
-
