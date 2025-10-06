@@ -6,8 +6,7 @@ import hmac
 import hashlib
 import base64
 import requests
-from datetime import datetime, timezone, timedelta
-
+from datetime import datetime, timezone
 
 # === CONFIGURATION ===
 OUTPUT_FILE = 'aws_health_events.csv'
@@ -22,6 +21,18 @@ AZURE_LOG_TYPE = "DashGov_CL"
 # AWS Clients
 role_name = os.getenv("IAM_ROLE")
 sts_client = boto3.client('sts')
+
+# === Load products config ===
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, "config_prodotti.json")
+with open(config_path, "r", encoding="utf-8") as f:
+    prodotti_config = json.load(f)
+
+# Invert mapping product -> accounts → account -> product
+account_to_prodotto = {}
+for prodotto, accounts in prodotti_config.items():
+    for acc in accounts:
+        account_to_prodotto[acc] = prodotto
 
 
 # === Azure Signature ===
@@ -44,7 +55,6 @@ def post_to_log_analytics(workspace_id, key, log_type, body):
     content_length = len(body_json)
     signature = build_signature(workspace_id, key, rfc1123date, content_length, 'POST', content_type, resource)
 
-    
     uri = f'https://{workspace_id}.ods.opinsights.azure.com{resource}?api-version=2016-04-01'
 
     headers = {
@@ -63,9 +73,7 @@ def post_to_log_analytics(workspace_id, key, log_type, body):
 
 # === Assume Role ===
 def assume_role(account_id, role_name):
-    #role_arn = f"arn:aws:iam::{account_id}:role/{role_name}"
     role_arn = f"arn:aws:iam::{account_id}:role/{role_name}"
-    
     try:
         response = sts_client.assume_role(
             RoleArn=role_arn,
@@ -162,6 +170,7 @@ def collect_health_issues(events, health_client, account_id, account_name):
         findings.append({
             'account_name': account_name,
             'account_id': account_id,
+            'product': account_to_prodotto.get(account_name, ""),  # aggiunto product
             'resource_id': resource_id,
             'issue': event.get('eventTypeCode', 'N/A'),
             'recommendationId': event.get('arn'),
@@ -179,10 +188,11 @@ def collect_health_issues(events, health_client, account_id, account_name):
 
 # === Export to CSV ===
 def write_to_csv(rows, output_file):
-    fieldnames = ['account_name', 'account_id', 'resource_id', 'issue',
-                  'recommendationId', 'severity', 'description', 'source', 'csp', 'region', 'category', 'date', 'dismissed']
+    fieldnames = ['account_name', 'account_id', 'product', 'resource_id', 'issue',
+                  'recommendationId', 'severity', 'description', 'source', 'csp',
+                  'region', 'category', 'date', 'dismissed']
 
-    with open(output_file, mode='w', newline='') as csvfile:
+    with open(output_file, mode='w', newline='', encoding="utf-8") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)

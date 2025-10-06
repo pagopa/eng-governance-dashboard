@@ -30,6 +30,23 @@ if not workspace_id or not primary_key:
 
 log_type = "DashGov_CL"
 
+# ===== Load product configuration =====
+script_dir = os.path.dirname(os.path.abspath(__file__))
+config_path = os.path.join(script_dir, "config_prodotti.json")
+
+if not os.path.exists(config_path):
+    print("Error: config_prodotti.json not found in script directory.")
+    sys.exit(1)
+
+with open(config_path, "r", encoding="utf-8") as f:
+    prodotti_config = json.load(f)
+
+# Invert mapping product -> accounts  -->  account -> product
+account_to_prodotto = {}
+for prodotto, accounts in prodotti_config.items():
+    for acc in accounts:
+        account_to_prodotto[acc] = prodotto
+
 # ===== Functions =====
 def check_dependency(command):
     if subprocess.call(f"command -v {command}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
@@ -85,6 +102,7 @@ check_dependency("az")
 header = [
     "account_name",
     "account_id",
+    "product",
     "resource_id",
     "issue",
     "recommendationId",
@@ -124,8 +142,9 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
     for sub in enabled_subs:
         sub_id = sub.get("id", "")
         sub_name = sub.get("name", "")
+        product = account_to_prodotto.get(sub_name, "")
 
-        print(f"==> Subscription: {sub_name}")
+        print(f"==> Subscription: {sub_name} (Product: {product})")
         run_az_command(["az", "account", "set", "--subscription", sub_id])
 
         cmd = [
@@ -157,6 +176,7 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
             row = [
                 sub_name,
                 sub_id,
+                product,
                 entry.get("resourceId", "").replace("\n", " ").replace('"', '""'),
                 f"{entry.get('policyDefinitionName', '')} - {entry.get('policySetDefinitionCategory', '')}".strip().replace("\n", " ").replace('"', '""'),
                 entry.get("policyDefinitionId", "").replace("\n", " ").replace('"', '""'),
@@ -175,6 +195,7 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
             record = {
                 "account_name": sub_name,
                 "account_id": sub_id,
+                "product": product,
                 "resource_id": entry.get("resourceId", "").replace("\n", " ").replace('"', '""'),
                 "issue": f"{entry.get('policyDefinitionName', '')} - {entry.get('policySetDefinitionCategory', '')}".strip().replace("\n", " ").replace('"', '""'),
                 "recommendationId": entry.get("policyDefinitionId", "").replace("\n", " ").replace('"', '""'),
@@ -201,5 +222,3 @@ if rows_to_send:
         print(f"Successfully sent {len(rows_to_send)} records to Log Analytics workspace '{workspace_id}'.")
     else:
         print("Failed to send data to Log Analytics.")
-
-
