@@ -168,7 +168,6 @@ def collect_issues_for_account(session, account_id, account_name):
     support_client = session.client("support", region_name="us-east-1")
     iam_client = session.client("iam")
 
-    # alias account
     try:
         aliases = iam_client.list_account_aliases().get("AccountAliases", [])
         alias_name = aliases[0] if aliases else account_name
@@ -207,7 +206,7 @@ def collect_issues_for_account(session, account_id, account_name):
         check_name = check.get("name", "N/A")
         category = CATEGORY_MAPPING.get(check.get("category", "").lower(), check.get("category", "N/A"))
         description = check.get("description", "N/A")
-        product = account_to_prodotto.get(account_name, "")  # 🔑 aggiunto mapping
+        product = account_to_prodotto.get(account_name, "")
 
         if not OUTPUT_DETAIL_PER_RESOURCE:
             severity = "high" if any(r.get("status") == "error" for r in flagged) else "medium"
@@ -233,6 +232,16 @@ def collect_issues_for_account(session, account_id, account_name):
         rows = []
         for r in flagged:
             dismissed = "yes" if r.get("isSuppressed", False) else "no"
+            metadata = r.get("metadata")
+            if metadata:
+                if isinstance(metadata, (list, dict)):
+                    metadata_str = json.dumps(metadata, ensure_ascii=False)
+                else:
+                    metadata_str = str(metadata)
+                full_description = f"{description} | Metadata: {metadata_str}"
+            else:
+                full_description = description
+
             rows.append({
                 "account_name": alias_name,
                 "account_id": str(account_id),
@@ -241,13 +250,13 @@ def collect_issues_for_account(session, account_id, account_name):
                 "issue": check_name,
                 "recommendationId": check_id,
                 "severity": "high" if r.get("status") == "error" else "medium",
-                "description": description,
+                "description": full_description,
                 "source": "AWS_TrustedAdvisor",
                 "csp": "AWS",
                 "region": r.get("region", "N/A"),
                 "category": category,
                 "date": timestamp,
-                "dismissed": dismissed 
+                "dismissed": dismissed
             })
         return rows
 
