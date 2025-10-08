@@ -15,6 +15,7 @@ from datetime import timezone
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 execution_time = datetime.datetime.now().strftime("%Y-%m-%d")
 outfile = f"azure_policy_noncompliant_{timestamp}.csv"
+run_id = os.getenv("RUN_ID")
 
 # Optional time range filter
 FROM = ""  # e.g., "2025-06-24T00:00:00Z"
@@ -113,7 +114,8 @@ header = [
     "region",
     "category",
     "date",
-    "dismissed"
+    "dismissed",
+    "runid" 
 ]
 
 rows_to_send = []
@@ -187,7 +189,8 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
                 entry.get("resourceLocation", "").replace("\n", " ").replace('"', '""'),
                 "Policy",
                 execution_time,
-                "no"
+                "no",
+                run_id
             ]
             writer.writerow(row)
             total += 1
@@ -206,7 +209,8 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
                 "region": entry.get("resourceLocation", "").replace("\n", " ").replace('"', '""'),
                 "category": "Policy",
                 "date": execution_time,
-                "dismissed": "no"
+                "dismissed": "no",
+                "runid": run_id
             }
             rows_to_send.append(record)
 

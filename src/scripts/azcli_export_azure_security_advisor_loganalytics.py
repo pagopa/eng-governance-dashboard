@@ -13,6 +13,7 @@ import os
 # ===== Log Analytics Config =====
 workspace_id = os.getenv("AZURE_WORKSPACE_ID")
 primary_key = os.getenv("AZURE_WORKSPACE_KEY")
+run_id = os.getenv("RUN_ID")
 
 if not workspace_id or not primary_key:
     print("Errore: variabili d'ambiente AZURE_WORKSPACE_ID e AZURE_WORKSPACE_KEY devono essere settate.")
@@ -114,7 +115,8 @@ header = [
     "region",
     "category",
     "date",
-    "dismissed"
+    "dismissed",
+    "runid"
 ]
 
 data_rows = []
@@ -194,7 +196,8 @@ with open(outfile, mode='w', newline='', encoding='utf-8') as f:
                 region,
                 category,
                 date,
-                dismissed
+                dismissed,
+                run_id
             ]
             writer.writerow(row)
 
@@ -212,7 +215,8 @@ with open(outfile, mode='w', newline='', encoding='utf-8') as f:
                 "region": region,
                 "category": category,
                 "date": date,
-                "dismissed": dismissed
+                "dismissed": dismissed,
+                "runid": run_id
             })
             total += 1
 
