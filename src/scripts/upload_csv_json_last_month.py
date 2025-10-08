@@ -45,47 +45,35 @@ except Exception as e:
     print(f"⚠️ Could not read run_id from Blob Storage: {e}")
 
 # ===== Query Log Analytics =====
-end_time = datetime.now(timezone.utc)
-start_time = end_time - timedelta(hours=DELTA_TIME)
 all_rows = []
 columns = None
-last_time = start_time
 
-def to_kql_datetime(dt: datetime) -> str:
-    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-while True:
+if run_id:
     query = f"""
     {TABLE_NAME}
-    | where TimeGenerated >= datetime({to_kql_datetime(last_time)}) and TimeGenerated < datetime({to_kql_datetime(end_time)})
+    | where runid_s == "{run_id}"
     | order by TimeGenerated asc
     | take {PAGE_SIZE}
     """
+    print(f"🔍 Executing query for runid: {run_id}")
     response = logs_client.query_workspace(workspace_id=WORKSPACE_ID, query=query, timespan=None)
-    if response.status != LogsQueryStatus.SUCCESS:
-        print("❌ Error:", response.error)
-        break
-
-    table = response.tables[0]
-    if columns is None:
+    if response.status == LogsQueryStatus.SUCCESS:
+        table = response.tables[0]
         columns = table.columns if isinstance(table.columns[0], str) else [col.name for col in table.columns]
-
-    rows = table.rows
-    if not rows:
-        break
-
-    all_rows.extend(rows)
-    last_time = rows[-1][columns.index("TimeGenerated")] + timedelta(microseconds=1)
-    print(f"➡️  Fetched {len(rows)} rows, total so far {len(all_rows)}")
-    if len(rows) < PAGE_SIZE:
-        break
+        all_rows = table.rows
+        print(f"✅ Retrieved {len(all_rows)} rows for runid {run_id}")
+    else:
+        print("❌ Error:", response.error)
+else:
+    print("⚠️ No run_id found. Skipping Log Analytics query.")
 
 # Output detailed CSV
 output_file = f"log_analytics_last30days.csv"
 with open(output_file, "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
-    writer.writerow(columns)
-    writer.writerows(all_rows)
+    if columns:
+        writer.writerow(columns)
+        writer.writerows(all_rows)
 
 print(f"✅ CSV file saved: {output_file} ({len(all_rows)} rows)")
 
