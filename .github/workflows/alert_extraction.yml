@@ -51,6 +51,10 @@ jobs:
       - name: install-py-deps
         run: pip3 install --require-hashes --requirement src/scripts/requirements.txt
 
+      - name: Set runid
+        id: set_runid
+        run: echo "RUN_ID=$(date -u +%s)" >> $GITHUB_ENV
+
       - name: Run Python script aws_dashboard_health multiaccount
         run: python src/scripts/awscli_export_aws_dashboard_health_loganalytics_multiaccount.py
 

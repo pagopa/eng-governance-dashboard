@@ -7,6 +7,9 @@ import hashlib
 import base64
 import requests
 from datetime import datetime, timezone
+from azure.storage.blob import BlobServiceClient
+from azure.identity import DefaultAzureCredential
+
 
 # === CONFIGURATION ===
 OUTPUT_FILE = 'aws_health_events.csv'
@@ -17,6 +20,9 @@ now = datetime.now(timezone.utc)
 AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 AZURE_WORKSPACE_KEY = os.getenv("AZURE_WORKSPACE_KEY")
 AZURE_LOG_TYPE = "DashGov_CL"
+run_id = os.getenv("RUN_ID")
+CONTAINER_NAME = "csv"
+STORAGE_ACCOUNT_NAME = os.getenv("AZURE_STORAGE_ACCOUNT_NAME")
 
 # AWS Clients
 role_name = os.getenv("IAM_ROLE")
@@ -33,6 +39,23 @@ account_to_prodotto = {}
 for prodotto, accounts in prodotti_config.items():
     for acc in accounts:
         account_to_prodotto[acc] = prodotto
+
+def upload_run_id(run_id_value):
+    if not STORAGE_ACCOUNT_NAME:
+        print("⚠️ Storage account name not set. Skipping run_id upload.")
+        return
+
+    try:
+        credential = DefaultAzureCredential()
+        account_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
+        blob_service_client = BlobServiceClient(account_url=account_url, credential=credential)
+        container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+
+        blob_name = "run_id.txt"
+        container_client.upload_blob(name=blob_name, data=run_id_value.encode("utf-8"), overwrite=True)
+        print(f"✅ Uploaded run_id to Blob Storage as {blob_name}")
+    except Exception as e:
+        print(f"❌ Failed to upload run_id: {e}")
 
 
 # === Azure Signature ===
@@ -181,7 +204,8 @@ def collect_health_issues(events, health_client, account_id, account_name):
             'region': event.get('region', 'N/A'),
             'category': "Service Retirement",
             'date': timestamp,
-            'dismissed': dismissed
+            'dismissed': dismissed,
+            'runid': run_id
         })
     return findings
 
@@ -190,7 +214,7 @@ def collect_health_issues(events, health_client, account_id, account_name):
 def write_to_csv(rows, output_file):
     fieldnames = ['account_name', 'account_id', 'product', 'resource_id', 'issue',
                   'recommendationId', 'severity', 'description', 'source', 'csp',
-                  'region', 'category', 'date', 'dismissed']
+                  'region', 'category', 'date', 'dismissed', 'runid']
 
     with open(output_file, mode='w', newline='', encoding="utf-8") as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -234,5 +258,11 @@ if __name__ == '__main__':
                 print("⚠️ Azure credentials not set. Skipping upload.")
         else:
             print("✅ No relevant health events found.")
+        
+        if run_id:
+            upload_run_id(run_id)
+        else:
+            print("⚠️ RUN_ID not set. Skipping upload to Blob Storage.")
+
     except Exception as e:
         print(f"❌ Error: {str(e)}")

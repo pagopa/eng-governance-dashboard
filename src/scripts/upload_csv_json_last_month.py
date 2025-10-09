@@ -30,52 +30,50 @@ for prodotto, accounts in prodotti_config.items():
 # Azure client setup
 credential = DefaultAzureCredential()
 account_url = f"https://{STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
-client = LogsQueryClient(credential)
+blob_service_client = BlobServiceClient(account_url=account_url, credential=credential)
+container_client = blob_service_client.get_container_client(CONTAINER_NAME)
+logs_client = LogsQueryClient(credential)
 
-end_time = datetime.now(timezone.utc)
-start_time = end_time - timedelta(hours=DELTA_TIME)
+# ===== Read run_id from Blob Storage =====
+run_id = None
+try:
+    blob_client = container_client.get_blob_client("run_id.txt")
+    run_id_bytes = blob_client.download_blob().readall()
+    run_id = run_id_bytes.decode("utf-8").strip()
+    print(f"✅ Retrieved run_id from Blob Storage: {run_id}")
+except Exception as e:
+    print(f"⚠️ Could not read run_id from Blob Storage: {e}")
 
+# ===== Query Log Analytics =====
 all_rows = []
 columns = None
-last_time = start_time
 
-def to_kql_datetime(dt: datetime) -> str:
-    return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-# Query Log Analytics
-while True:
+if run_id:
     query = f"""
     {TABLE_NAME}
-    | where TimeGenerated >= datetime({to_kql_datetime(last_time)}) and TimeGenerated < datetime({to_kql_datetime(end_time)})
+    | where runid_s == "{run_id}"
     | order by TimeGenerated asc
     | take {PAGE_SIZE}
     """
-    response = client.query_workspace(workspace_id=WORKSPACE_ID, query=query, timespan=None)
-
-    if response.status != LogsQueryStatus.SUCCESS:
-        print("❌ Error:", response.error)
-        break
-
-    table = response.tables[0]
-    if columns is None:
+    print(f"🔍 Executing query for runid: {run_id}")
+    response = logs_client.query_workspace(workspace_id=WORKSPACE_ID, query=query, timespan=None)
+    if response.status == LogsQueryStatus.SUCCESS:
+        table = response.tables[0]
         columns = table.columns if isinstance(table.columns[0], str) else [col.name for col in table.columns]
-
-    rows = table.rows
-    if not rows:
-        break
-
-    all_rows.extend(rows)
-    last_time = rows[-1][columns.index("TimeGenerated")] + timedelta(microseconds=1)
-    print(f"➡️  Fetched {len(rows)} rows, total so far {len(all_rows)}")
-    if len(rows) < PAGE_SIZE:
-        break
+        all_rows = table.rows
+        print(f"✅ Retrieved {len(all_rows)} rows for runid {run_id}")
+    else:
+        print("❌ Error:", response.error)
+else:
+    print("⚠️ No run_id found. Skipping Log Analytics query.")
 
 # Output detailed CSV
 output_file = f"log_analytics_last30days.csv"
 with open(output_file, "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
-    writer.writerow(columns)
-    writer.writerows(all_rows)
+    if columns:
+        writer.writerow(columns)
+        writer.writerows(all_rows)
 
 print(f"✅ CSV file saved: {output_file} ({len(all_rows)} rows)")
 
@@ -88,7 +86,6 @@ idx_account_name_s = columns.index("account_name_s")
 idx_csp = columns.index("csp_s") if "csp_s" in columns else None
 idx_dismissed = columns.index("dismissed_s") if "dismissed_s" in columns else None
 
-# Summarize data by account and CSP
 now = datetime.now(timezone.utc)
 summary = defaultdict(lambda: {
     "total": 0,
@@ -116,7 +113,6 @@ for row in all_rows:
     dismissed_value = row[idx_dismissed].lower() if idx_dismissed is not None else "no"
 
     key = (account, csp)
-
     if dismissed_value == "yes":
         summary[key]["dismissed"] += 1
     else:
@@ -127,7 +123,6 @@ for row in all_rows:
             summary[key]["medium"] += 1
         elif severity == "low":
             summary[key]["low"] += 1
-
         month_key = time.strftime("%Y-%m")
         monthly_counts[key][month_key] += 1
 
@@ -141,12 +136,10 @@ for key in summary:
     current_month = now.strftime("%Y-%m")
     previous_month = (now - timedelta(days=30)).strftime("%Y-%m")
     last_12_months = [(now - timedelta(days=30 * i)).strftime("%Y-%m") for i in range(1, 13)]
-
     current_count = monthly_counts[key][current_month]
     previous_count = monthly_counts[key][previous_month]
     last_12_total = sum(monthly_counts[key][m] for m in last_12_months)
     last_12_avg = last_12_total / 12 if last_12_total > 0 else 0
-
     summary[key]["change_last_1m"] = percent_change(current_count, previous_count)
     summary[key]["change_last_12m"] = percent_change(current_count, last_12_avg)
 
@@ -164,7 +157,8 @@ with open("sintesi_last30days.json", "w", encoding="utf-8") as f:
             "low_issues": stats["low"],
             "dismissed_issues": stats["dismissed"],
             "change_last_12_month": stats["change_last_12m"],
-            "change_last_month": stats["change_last_1m"]
+            "change_last_month": stats["change_last_1m"],
+            "runid": run_id
         }
         for (account, csp), stats in summary.items()
     ], f, ensure_ascii=False, indent=4)
@@ -173,8 +167,9 @@ with open("sintesi_last30days.json", "w", encoding="utf-8") as f:
 with open("sintesi_last30days.csv", "w", newline="", encoding="utf-8") as f:
     writer = csv.writer(f)
     writer.writerow([
-        "account", "product", "provider", "date", "total_issues", "high_issues", "medium_issues",
-        "low_issues", "dismissed_issues", "change_last_12_month", "change_last_month"
+        "account", "product", "provider", "date", "total_issues",
+        "high_issues", "medium_issues", "low_issues", "dismissed_issues",
+        "change_last_12_month", "change_last_month", "runid"
     ])
     for (account, csp), stats in summary.items():
         prodotto = account_to_prodotto.get(account, "")
@@ -189,15 +184,13 @@ with open("sintesi_last30days.csv", "w", newline="", encoding="utf-8") as f:
             stats["low"],
             stats["dismissed"],
             stats["change_last_12m"],
-            stats["change_last_1m"]
+            stats["change_last_1m"],
+            run_id
         ])
 
 print("✅ Script completed. Files sintesi_last30days.csv and sintesi_last30days.json updated.")
 
-# Upload to Azure Blob Storage
-blob_service_client = BlobServiceClient(account_url=account_url, credential=credential)
-container_client = blob_service_client.get_container_client(CONTAINER_NAME)
-
+# ===== Upload all files to Blob Storage =====
 def upload_file(local_file_path, remote_file_name):
     with open(local_file_path, "rb") as data:
         container_client.upload_blob(name=remote_file_name, data=data, overwrite=True)

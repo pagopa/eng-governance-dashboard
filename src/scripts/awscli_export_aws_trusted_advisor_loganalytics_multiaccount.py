@@ -15,6 +15,7 @@ from botocore.exceptions import ClientError, EndpointConnectionError
 # === CONFIGURATION / ENV ===
 OUTPUT_FILE = os.getenv("OUTPUT_FILE", "aws_trusted_advisor_findings.csv")
 timestamp = datetime.now().strftime('%Y-%m-%d')
+run_id = os.getenv("RUN_ID")
 
 AZURE_WORKSPACE_ID = os.getenv("AZURE_WORKSPACE_ID")
 AZURE_WORKSPACE_KEY = os.getenv("AZURE_WORKSPACE_KEY")
@@ -226,7 +227,8 @@ def collect_issues_for_account(session, account_id, account_name):
                 "category": category,
                 "affected_resources": len(flagged),
                 "date": timestamp,
-                "dismissed": dismissed
+                "dismissed": dismissed,
+                "runid": run_id 
             }]
 
         rows = []
@@ -256,7 +258,8 @@ def collect_issues_for_account(session, account_id, account_name):
                 "region": r.get("region", "N/A"),
                 "category": category,
                 "date": timestamp,
-                "dismissed": dismissed
+                "dismissed": dismissed,
+                "runid": run_id
             })
         return rows
 
@@ -278,7 +281,7 @@ def write_to_csv(rows, output_file):
     base_fields = [
         "account_name", "account_id", "product", "resource_id", "issue",
         "recommendationId", "severity", "description",
-        "source", "csp", "region", "category", "date", "dismissed"
+        "source", "csp", "region", "category", "date", "dismissed", "runid"
     ]
     if not OUTPUT_DETAIL_PER_RESOURCE:
         base_fields.append("affected_resources")
