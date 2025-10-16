@@ -1,6 +1,7 @@
 {
   "AWS": [
-    "IAM Access Analyzer - external access"
+    "IAM Access Analyzer - external access",
+    "AWS_TRUSTEDADVISOR_PLANNED_LIFECYCLE_EVENT"
   ],
   "Azure": [
     "Use Azure Capacity Reservation for virtual machine (VM)"
