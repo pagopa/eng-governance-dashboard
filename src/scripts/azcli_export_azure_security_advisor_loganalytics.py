@@ -66,11 +66,12 @@ def post_data(customer_id, shared_key, body, log_type):
     }
 
     response = requests.post(uri, data=body, headers=headers)
-    if response.status_code >= 200 and response.status_code <= 299:
+    if 200 <= response.status_code <= 299:
         return True
     else:
         print(f"[!] Failed to send data: {response.status_code} {response.text}")
         return False
+
 
 # ===== Check dependency =====
 def check_dependency(command):
@@ -95,6 +96,17 @@ account_to_prodotto = {}
 for prodotto, accounts in prodotti_config.items():
     for acc in accounts:
         account_to_prodotto[acc] = prodotto
+
+
+# ===== Load exclude alerts config =====
+exclude_config_path = os.path.join(script_dir, "config_exclude_alert.json")
+with open(exclude_config_path, "r", encoding="utf-8") as f:
+    exclude_alerts = json.load(f)
+
+def is_excluded_issue(csp, issue_name):
+    excluded_list = exclude_alerts.get(csp, [])
+    return any(issue_name.lower() == ex.lower() for ex in excluded_list)
+
 
 # ===== Config =====
 timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -180,7 +192,9 @@ with open(outfile, mode='w', newline='', encoding='utf-8') as f:
             else:
                 region = "N/A"
 
-            dismissed = "yes" if rec.get("suppressionIds") else "no"            
+            dismissed = "yes" if rec.get("suppressionIds") else "no"
+            if is_excluded_issue("Azure", issue):
+                dismissed = "yes"
 
             row = [
                 sub_name,

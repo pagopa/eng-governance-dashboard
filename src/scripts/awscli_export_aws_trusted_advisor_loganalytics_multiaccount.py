@@ -45,6 +45,15 @@ for prodotto, accounts in prodotti_config.items():
     for acc in accounts:
         account_to_prodotto[acc] = prodotto
 
+# === Load exclude alerts config ===
+exclude_config_path = os.path.join(script_dir, "config_exclude_alert.json")
+with open(exclude_config_path, "r", encoding="utf-8") as f:
+    exclude_alerts = json.load(f)
+
+def is_excluded_issue(csp, issue_name):
+    excluded_list = exclude_alerts.get(csp, [])
+    return any(issue_name.lower() == ex.lower() for ex in excluded_list)
+
 # === Helpers ===
 def retry(func, retries=3, initial_delay=1, backoff=2, exceptions=(Exception,)):
     delay = initial_delay
@@ -212,6 +221,10 @@ def collect_issues_for_account(session, account_id, account_name):
         if not OUTPUT_DETAIL_PER_RESOURCE:
             severity = "high" if any(r.get("status") == "error" for r in flagged) else "medium"
             dismissed = "yes" if any(r.get("isSuppressed", False) for r in flagged) else "no"
+
+            if is_excluded_issue("AWS", check_name):
+                dismissed = "yes"
+
             return [{
                 "account_name": alias_name,
                 "account_id": str(account_id),
@@ -234,6 +247,10 @@ def collect_issues_for_account(session, account_id, account_name):
         rows = []
         for r in flagged:
             dismissed = "yes" if r.get("isSuppressed", False) else "no"
+
+            if is_excluded_issue("AWS", check_name):
+                dismissed = "yes"
+
             metadata = r.get("metadata")
             if metadata:
                 if isinstance(metadata, (list, dict)):

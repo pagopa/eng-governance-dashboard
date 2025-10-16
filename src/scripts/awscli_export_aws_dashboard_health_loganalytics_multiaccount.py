@@ -40,6 +40,15 @@ for prodotto, accounts in prodotti_config.items():
     for acc in accounts:
         account_to_prodotto[acc] = prodotto
 
+# === Load exclude alerts config ===
+exclude_config_path = os.path.join(script_dir, "config_exclude_alert.json")
+with open(exclude_config_path, "r", encoding="utf-8") as f:
+    exclude_alerts = json.load(f)
+
+def is_excluded_issue(csp, issue_name):
+    excluded_list = exclude_alerts.get(csp, [])
+    return any(issue_name.lower() == ex.lower() for ex in excluded_list)
+
 def upload_run_id(run_id_value):
     if not STORAGE_ACCOUNT_NAME:
         print("⚠️ Storage account name not set. Skipping run_id upload.")
@@ -189,13 +198,15 @@ def collect_health_issues(events, health_client, account_id, account_name):
         else:
             severity = 'low'
 
-        dismissed = "no"
+        issue_name = event.get('eventTypeCode', 'N/A')
+        dismissed = "yes" if is_excluded_issue("AWS", issue_name) else "no"
+
         findings.append({
             'account_name': account_name,
             'account_id': account_id,
-            'product': account_to_prodotto.get(account_name, ""),  # aggiunto product
+            'product': account_to_prodotto.get(account_name, ""),
             'resource_id': resource_id,
-            'issue': event.get('eventTypeCode', 'N/A'),
+            'issue': issue_name,
             'recommendationId': event.get('arn'),
             'severity': severity,
             'description': description,

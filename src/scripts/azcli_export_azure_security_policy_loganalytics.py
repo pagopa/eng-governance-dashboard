@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 
+#!/usr/bin/env python3
 import subprocess
 import sys
 import csv
@@ -48,6 +48,17 @@ for prodotto, accounts in prodotti_config.items():
     for acc in accounts:
         account_to_prodotto[acc] = prodotto
 
+
+# ===== Load exclude alerts configuration =====
+exclude_config_path = os.path.join(script_dir, "config_exclude_alert.json")
+with open(exclude_config_path, "r", encoding="utf-8") as f:
+    exclude_alerts = json.load(f)
+
+def is_excluded_issue(csp, issue_name):
+    excluded_list = exclude_alerts.get(csp, [])
+    return any(issue_name.lower() == ex.lower() for ex in excluded_list)
+
+
 # ===== Functions =====
 def check_dependency(command):
     if subprocess.call(f"command -v {command}", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) != 0:
@@ -90,11 +101,12 @@ def post_data_to_log_analytics(workspace_id, shared_key, body, log_type):
     }
 
     response = requests.post(uri, data=body, headers=headers)
-    if response.status_code >= 200 and response.status_code <= 299:
+    if 200 <= response.status_code <= 299:
         return True
     else:
         print(f"Failed to send data to Log Analytics: {response.status_code} {response.text}")
         return False
+
 
 # ===== Dependency Check =====
 check_dependency("az")
@@ -115,7 +127,7 @@ header = [
     "category",
     "date",
     "dismissed",
-    "runid" 
+    "runid"
 ]
 
 rows_to_send = []
@@ -175,12 +187,16 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
         print(f"    NonCompliant items kept after filtering: {len(filtered)}")
 
         for entry in filtered:
+            issue_name = f"{entry.get('policyDefinitionName', '')} - {entry.get('policySetDefinitionCategory', '')}".strip().replace("\n", " ").replace('"', '""')
+
+            dismissed = "yes" if is_excluded_issue("Azure", issue_name) else "no"
+
             row = [
                 sub_name,
                 sub_id,
                 product,
                 entry.get("resourceId", "").replace("\n", " ").replace('"', '""'),
-                f"{entry.get('policyDefinitionName', '')} - {entry.get('policySetDefinitionCategory', '')}".strip().replace("\n", " ").replace('"', '""'),
+                issue_name,
                 entry.get("policyDefinitionId", "").replace("\n", " ").replace('"', '""'),
                 "medium",
                 entry.get("policyDefinitionReferenceId", "").replace("\n", " ").replace('"', '""'),
@@ -189,7 +205,7 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
                 entry.get("resourceLocation", "").replace("\n", " ").replace('"', '""'),
                 "Policy",
                 execution_time,
-                "no",
+                dismissed,
                 run_id
             ]
             writer.writerow(row)
@@ -200,7 +216,7 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
                 "account_id": sub_id,
                 "product": product,
                 "resource_id": entry.get("resourceId", "").replace("\n", " ").replace('"', '""'),
-                "issue": f"{entry.get('policyDefinitionName', '')} - {entry.get('policySetDefinitionCategory', '')}".strip().replace("\n", " ").replace('"', '""'),
+                "issue": issue_name,
                 "recommendationId": entry.get("policyDefinitionId", "").replace("\n", " ").replace('"', '""'),
                 "severity": "medium",
                 "description": entry.get("policyDefinitionReferenceId", "").replace("\n", " ").replace('"', '""'),
@@ -209,20 +225,20 @@ with open(outfile, mode="w", newline="", encoding="utf-8") as f:
                 "region": entry.get("resourceLocation", "").replace("\n", " ").replace('"', '""'),
                 "category": "Policy",
                 "date": execution_time,
-                "dismissed": "no",
+                "dismissed": dismissed,
                 "runid": run_id
             }
             rows_to_send.append(record)
 
 print()
-print(f"Done! Total NonCompliant entries exported: {total}")
-print(f"CSV file generated: {outfile}")
+print(f"✅ Done! Total NonCompliant entries exported: {total}")
+print(f"📄 CSV file generated: {outfile}")
 
-# Send to Log Analytics
+# ===== Send to Log Analytics =====
 if rows_to_send:
     body = json.dumps(rows_to_send)
     success = post_data_to_log_analytics(workspace_id, primary_key, body, log_type)
     if success:
-        print(f"Successfully sent {len(rows_to_send)} records to Log Analytics workspace '{workspace_id}'.")
+        print(f"✅ Successfully sent {len(rows_to_send)} records to Log Analytics workspace '{workspace_id}'.")
     else:
-        print("Failed to send data to Log Analytics.")
+        print("❌ Failed to send data to Log Analytics.")
