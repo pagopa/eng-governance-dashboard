@@ -4,6 +4,7 @@
     "AWS_TRUSTEDADVISOR_PLANNED_LIFECYCLE_EVENT"
   ],
   "Azure": [
-    "Use Azure Capacity Reservation for virtual machine (VM)"
+    "Enable Soft Delete to protect your blob data",
+    "app_service_allowed_sku - pagopa_dev"
   ]
 }
