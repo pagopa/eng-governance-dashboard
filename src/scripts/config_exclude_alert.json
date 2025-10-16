@@ -1,0 +1,8 @@
+{
+  "AWS": [
+    "IAM Access Analyzer - external access"
+  ],
+  "Azure": [
+    "Use Azure Capacity Reservation for virtual machine (VM)"
+  ]
+}
