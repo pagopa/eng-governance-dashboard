@@ -1,6 +1,7 @@
 {
   "AWS": [
-    "IAM Access Analyzer - external access"
+    "IAM Access Analyzer - external access",
+    "MFA on Root Account"
   ],
   "Azure": [
   ]
