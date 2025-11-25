@@ -4,6 +4,9 @@
     "MFA on Root Account"
   ],
   "Azure": [
-    "7f89b1eb-583c-429a-8828-af049802c1d9 - regulatory compliance"
+    "7f89b1eb-583c-429a-8828-af049802c1d9 - regulatory compliance",
+    "a451c1ef-c6ca-483d-87ed-f49761e3ffb5 - regulatory compliance",
+    "34c877ad-507e-4c82-993e-3452a6e0ad3c - regulatory compliance",
+    "Access to storage accounts with firewall and virtual network configurations should be restricted"
   ]
 }
